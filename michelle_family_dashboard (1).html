@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ming & Michelle's Family Financial Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface2: #f1ede6;
+  --border: #e0dbd2;
+  --accent: #1d4e2a;
+  --accent2: #3d7a52;
+  --text: #18181b;
+  --muted: #64748b;
+  --light: #94a3b8;
+  --red: #b91c1c;
+  --green: #1d4e2a;
+  --blue: #1e3a6e;
+  --gold: #92660a;
+  --purple: #5b21b6;
+  --orange: #c2410c;
+  --tag-bg: #dcfce7;
+  --warn-bg: #fefce8;
+  --warn-border: #eab308;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23f6f4ef'/%3E%3Ccircle cx='1' cy='1' r='0.4' fill='%23e8e3db' opacity='0.5'/%3E%3C/svg%3E");}
+.app{position:relative;z-index:1;}
+
+/* ── Header ── */
+header{background:linear-gradient(135deg,#1d4e2a 0%,#2d6e3a 100%);color:white;padding:0 40px;box-shadow:0 2px 12px rgba(0,0,0,0.15);}
+.header-inner{max-width:1340px;margin:0 auto;padding:18px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.brand-row{display:flex;align-items:center;gap:14px;}
+.avatar{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.45);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.1rem;color:white;font-weight:700;flex-shrink:0;}
+.brand h1{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:white;line-height:1.2;}
+.brand p{font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:2px;letter-spacing:0.06em;text-transform:uppercase;}
+.hstats{display:flex;gap:20px;flex-wrap:wrap;}
+.hstat{text-align:right;}
+.hstat-l{font-size:0.62rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;}
+.hstat-v{font-family:'IBM Plex Mono',monospace;font-size:0.88rem;font-weight:500;color:white;}
+.nav-tabs{display:flex;gap:3px;flex-wrap:wrap;}
+.nav-tab{padding:7px 13px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.nav-tab:hover{background:rgba(255,255,255,0.12);color:white;}
+.nav-tab.active{background:rgba(255,255,255,0.2);color:white;}
+@media(max-width:768px){header{padding:0 16px;}.hstats{display:none;}.main{padding:14px!important;}}
+
+/* ── Main ── */
+.main{max-width:1340px;margin:0 auto;padding:26px 40px;}
+.page{display:none;}.page.active{display:block;}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.card-title{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';display:block;width:3px;height:15px;background:var(--accent);border-radius:2px;flex-shrink:0;}
+.card-sub{font-size:0.72rem;color:var(--muted);margin-bottom:14px;margin-top:-10px;}
+
+/* ── Layout ── */
+.two-col{display:grid;grid-template-columns:290px 1fr;gap:18px;align-items:start;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.two-even{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:960px){.two-col{grid-template-columns:1fr;}.three-col{grid-template-columns:1fr!important;}.two-even{grid-template-columns:1fr;}}
+
+/* ── Stats ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:700px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.stat-label{font-size:0.62rem;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;line-height:1;}
+.stat-sub{font-size:0.68rem;color:var(--muted);margin-top:3px;}
+.clr-g{color:var(--green);}.clr-b{color:var(--blue);}.clr-gold{color:var(--gold);}.clr-r{color:var(--red);}.clr-p{color:var(--purple);}.clr-o{color:var(--orange);}
+
+/* ── Net worth ── */
+.nw-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;margin-bottom:4px;transition:background 0.12s;}
+.nw-row:hover{background:var(--surface2);}
+.nw-label{font-size:0.82rem;color:var(--text);}
+.nw-sub{font-size:0.68rem;color:var(--muted);}
+.nw-val{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;}
+.nw-bar-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin:2px 0 10px;}
+.nw-bar{height:100%;border-radius:3px;}
+.section-divider{font-size:0.65rem;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:0.1em;padding:10px 12px 4px;border-top:1px solid var(--border);margin-top:6px;}
+
+/* ── Alloc bar ── */
+.alloc-visual{height:10px;border-radius:5px;overflow:hidden;display:flex;margin:10px 0;}
+.alloc-seg{height:100%;}
+.legend-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+.legend-dot{display:flex;align-items:center;gap:4px;}
+.legend-dot span{font-size:0.67rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);}
+
+/* ── Table ── */
+.holdings-table{width:100%;border-collapse:collapse;}
+.holdings-table th{font-size:0.65rem;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:0.08em;padding:6px 10px;text-align:left;border-bottom:2px solid var(--border);}
+.holdings-table td{padding:10px 10px;border-bottom:1px solid var(--surface2);font-size:0.8rem;}
+.holdings-table tr:last-child td{border-bottom:none;}
+.holdings-table tr:hover td{background:var(--surface2);}
+.ticker-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:0.73rem;font-weight:500;}
+.wbar-track{height:5px;background:var(--border);border-radius:3px;width:65px;}
+.wbar-fill{height:100%;border-radius:3px;}
+
+/* ── Scenario ── */
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.scenario-card{border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.scenario-icon{font-size:1.1rem;margin-bottom:5px;}
+.scenario-label{font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.scenario-amount{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;}
+.scenario-pct{font-size:0.7rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;}
+
+/* ── Form ── */
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.form-input{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;transition:border-color 0.15s;}
+.form-input:focus{border-color:var(--accent2);}
+.pfx-wrap{position:relative;}.pfx-wrap .pfx{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:0.85rem;}
+.pfx-wrap .form-input{padding-left:22px;}
+input[type=range]{width:100%;height:5px;-webkit-appearance:none;background:linear-gradient(90deg,var(--accent) var(--pct,40%),var(--border) var(--pct,40%));border-radius:3px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 1px 5px rgba(0,0,0,0.18);cursor:pointer;}
+.slider-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+.slider-row .s-lo{font-size:0.65rem;color:var(--light);}
+.slider-val{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--accent);}
+.chip-group{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:0.73rem;font-weight:500;cursor:pointer;transition:all 0.15s;user-select:none;}
+.chip.on{border-color:var(--accent);background:var(--tag-bg);color:var(--accent);font-weight:700;}
+.btn{padding:9px 16px;border-radius:7px;border:none;font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.btn-primary{background:var(--accent);color:white;}.btn-primary:hover{background:var(--accent2);}
+.btn-full{width:100%;}
+
+/* ── Bar chart ── */
+.bar-chart{display:flex;flex-direction:column;gap:9px;}
+.bar-row{display:grid;grid-template-columns:110px 1fr 72px;align-items:center;gap:10px;}
+.bar-name{font-size:0.76rem;color:var(--muted);}
+.bar-track{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;}
+.bar-val{font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);text-align:right;}
+
+/* ── 529 ── */
+.kid-tabs{display:flex;gap:6px;margin-bottom:16px;}
+.kid-tab{padding:7px 16px;border-radius:7px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.kid-tab.active{border-color:var(--accent);background:var(--tag-bg);color:var(--accent);}
+.college-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.milestone-list{display:flex;flex-direction:column;gap:6px;}
+.milestone-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.milestone-label{font-size:0.78rem;color:var(--text);font-weight:500;}
+.milestone-year{font-size:0.68rem;color:var(--muted);}
+.milestone-val{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--accent);font-weight:600;}
+
+/* ── CD ── */
+.cd-card{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:10px;padding:16px;margin-bottom:14px;}
+.cd-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.cd-header h3{font-family:'Playfair Display',serif;font-size:0.92rem;color:#854d0e;font-weight:700;}
+.cd-options{display:flex;flex-direction:column;gap:8px;}
+.cd-option{display:flex;align-items:flex-start;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color 0.15s;}
+.cd-option:hover{border-color:var(--accent);}
+.cd-option.selected{border-color:var(--accent);background:var(--tag-bg);}
+.cd-option-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;transition:all 0.15s;}
+.cd-option.selected .cd-option-dot{border-color:var(--accent);background:var(--accent);}
+.cd-option-text h4{font-size:0.8rem;font-weight:600;margin-bottom:2px;}
+.cd-option-text p{font-size:0.7rem;color:var(--muted);}
+
+/* ── Rebalance ── */
+.rebal-header{display:grid;grid-template-columns:1fr 90px 90px 100px 80px;gap:10px;font-size:0.62rem;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:0.08em;padding:0 10px 7px;border-bottom:2px solid var(--border);margin-bottom:5px;}
+.rebal-row{display:grid;grid-template-columns:1fr 90px 90px 100px 80px;gap:10px;padding:9px 10px;border-radius:7px;align-items:center;transition:background 0.12s;}
+.rebal-row:hover{background:var(--surface2);}
+.rebal-action{font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:5px;text-align:center;}
+.a-buy{background:#dcfce7;color:var(--green);}.a-sell{background:#fee2e2;color:var(--red);}.a-hold{background:var(--surface2);color:var(--muted);}
+.drift-up{color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:0.75rem;}
+.drift-dn{color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:0.75rem;}
+.drift-ok{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.75rem;}
+
+/* ── SVG charts ── */
+.chart-svg{width:100%;display:block;}
+.proj-x-row{display:flex;justify-content:space-between;padding:0 6px;margin-top:4px;}
+.proj-x-row span{font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--light);}
+
+/* ── Tags & alerts ── */
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.66rem;font-weight:700;background:var(--tag-bg);color:var(--accent);}
+.alert{border-radius:8px;padding:10px 14px;font-size:0.75rem;margin-top:10px;}
+.alert-green{background:#f0fdf4;border:1px solid #86efac;color:#14532d;}
+.alert-warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:#854d0e;}
+.alert-blue{background:#eff6ff;border:1px solid #93c5fd;color:#1e3a6e;}
+
+.divider{height:1px;background:var(--border);margin:14px 0;}
+.page-title{font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:4px;}
+.page-desc{font-size:0.78rem;color:var(--muted);margin-bottom:18px;}
+.mb-14{margin-bottom:14px;}.mb-18{margin-bottom:18px;}
+.empty{text-align:center;padding:40px 16px;color:var(--light);}
+.empty-icon{font-size:2rem;margin-bottom:10px;opacity:0.4;}
+.empty h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--muted);margin-bottom:5px;}
+.empty p{font-size:0.75rem;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeIn 0.3s ease both;}
+
+.disclaimer{background:#fef9ec;border:1px solid #eab308;border-radius:8px;padding:8px 14px;font-size:0.7rem;color:#78350f;margin-bottom:16px;}
+
+/* ── Editable values ── */
+.editable-val{
+  position:relative;cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  border-bottom:1.5px dashed transparent;border-radius:3px;
+  transition:border-color 0.15s,background 0.15s;padding:1px 4px;margin:-1px -4px;
+}
+.editable-val:hover{border-bottom-color:var(--accent2);background:rgba(29,78,42,0.06);}
+.editable-val::after{content:'✎';font-size:0.65rem;opacity:0;transition:opacity 0.15s;color:var(--accent2);}
+.editable-val:hover::after{opacity:1;}
+.edit-popup{
+  position:fixed;z-index:9999;background:white;border:1px solid var(--border);
+  border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.15);padding:14px 16px;
+  min-width:220px;display:none;
+}
+.edit-popup.open{display:block;animation:fadeIn 0.15s ease;}
+.edit-popup label{display:block;font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.edit-popup input{width:100%;padding:8px 10px;border:1.5px solid var(--accent2);border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:0.9rem;color:var(--text);outline:none;background:var(--surface2);}
+.edit-popup .ep-btns{display:flex;gap:6px;margin-top:10px;}
+.edit-popup .ep-ok{flex:1;padding:7px;background:var(--accent);color:white;border:none;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+.edit-popup .ep-ok:hover{background:var(--accent2);}
+.edit-popup .ep-cancel{padding:7px 12px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:6px;font-size:0.78rem;cursor:pointer;}
+.edit-hint{font-size:0.68rem;color:var(--accent2);margin-bottom:14px;display:flex;align-items:center;gap:5px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="header-inner">
+    <div class="brand-row">
+      <div class="avatar">M</div>
+      <div class="brand">
+        <h1>Ming & Michelle's Family Financial Dashboard</h1>
+        <p>Frisco, TX · Family of 4 · Long-Term Wealth Building</p>
+      </div>
+    </div>
+    <div class="hstats">
+      <div class="hstat"><div class="hstat-l">Net Worth (est.)</div><div class="hstat-v" id="hNetWorth">$1,690,000</div></div>
+      <div class="hstat"><div class="hstat-l">Liquid / Investable</div><div class="hstat-v" id="hLiquid">$450,000</div></div>
+      <div class="hstat"><div class="hstat-l">Total Assets</div><div class="hstat-v" id="hTotalAssets">$1,630,000</div></div>
+      <div class="hstat"><div class="hstat-l">Biz Profit / Loss</div><div class="hstat-v" id="hBizProfit" style="color:rgba(255,255,255,0.4);">—</div></div>
+      <div class="hstat"><div class="hstat-l">Kids</div><div class="hstat-v">Age 3 & 9</div></div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('networth',this)">🏦 Net Worth</button>
+      <button class="nav-tab" onclick="showPage('optimizer',this)">⚖ Optimizer</button>
+      <button class="nav-tab" onclick="showPage('dca',this)">📅 DCA</button>
+      <button class="nav-tab" onclick="showPage('college',this)">🎓 College 529</button>
+      <button class="nav-tab" onclick="showPage('retirement',this)">🏖 401K</button>
+      <button class="nav-tab" onclick="showPage('rebalance',this)">↺ Rebalance</button>
+      <button class="nav-tab" onclick="showPage('cdrates',this)">💰 CD Rates</button>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+<div class="disclaimer">⚠ Educational tool only · Based on historical averages · All tax implications should be verified with a cross-border CPA · Not financial advice</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 1 · NET WORTH OVERVIEW
+══════════════════════════════════════════════════ -->
+<div class="page active" id="page-networth">
+  <div class="page-title">Family Net Worth Overview</div>
+  <div class="page-desc">Complete picture of your family's financial position as of today.</div>
+  <div class="edit-hint">✎ Click any value to edit it — totals and allocation update automatically.</div>
+
+  <!-- Big number banner -->
+  <div style="background:linear-gradient(135deg,#1d4e2a,#2d6e3a);border-radius:14px;padding:22px 28px;color:white;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <div style="font-size:0.68rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Estimated Total Net Worth</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:700;color:white;line-height:1;" id="bannerNetWorth">$1,690,000</div>
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:6px;">Excluding China business assets (not quantified)</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;text-align:center;">
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Liquid / Investable</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:600;color:white;" id="bannerLiquid">$450,000</div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);margin-top:2px;" id="bannerLiquidSub">$200K cash + $250K CD</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;text-align:center;">
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Monthly Mortgage</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:600;color:white;">
+          ~<span class="editable-val" data-key="mortgageMonthly" style="color:white;border-bottom-color:rgba(255,255,255,0.4);" onclick="openEdit(event,'mortgageMonthly','Monthly Mortgage Payment')">1,320</span>
+        </div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);margin-top:2px;">
+          <span class="editable-val" data-key="mortgageRate" style="color:rgba(255,255,255,0.7);border-bottom-color:rgba(255,255,255,0.3);font-size:0.65rem;" onclick="openEdit(event,'mortgageRate','Mortgage Rate (%)')">3.375</span>% · $<span class="editable-val" data-key="mortgageRemaining" style="color:rgba(255,255,255,0.7);border-bottom-color:rgba(255,255,255,0.3);font-size:0.65rem;" onclick="openEdit(event,'mortgageRemaining','Mortgage Remaining ($)')">130,000</span> remaining
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+    <!-- Assets -->
+    <div class="card">
+      <div class="card-title">Assets</div>
+
+      <div class="section-divider">Real Estate</div>
+      <div class="nw-row">
+        <div><div class="nw-label">Frisco, TX Home</div><div class="nw-sub">Bought $<span class="editable-val" data-key="homePurchase" onclick="openEdit(event,'homePurchase','Home Purchase Price ($)')">700,000</span> · Est. current value</div></div>
+        <div class="nw-val clr-g editable-val" data-key="homeValue" onclick="openEdit(event,'homeValue','Home Current Value ($)')">$<span id="disp-homeValue">760,000</span></div>
+      </div>
+      <div class="nw-bar-wrap"><div class="nw-bar" id="bar-homeValue" style="width:85%;background:#2d6e3a;"></div></div>
+
+      <div class="section-divider">Retirement Accounts</div>
+      <div class="nw-row">
+        <div><div class="nw-label">Combined 401K</div><div class="nw-sub">Tax-deferred retirement savings</div></div>
+        <div class="nw-val clr-b editable-val" data-key="k401" onclick="openEdit(event,'k401','Combined 401K Balance ($)')">$<span id="disp-k401">420,000</span></div>
+      </div>
+      <div class="nw-bar-wrap"><div class="nw-bar" id="bar-k401" style="width:47%;background:#1e3a6e;"></div></div>
+
+      <div class="section-divider">Liquid Assets</div>
+      <div class="nw-row">
+        <div><div class="nw-label">Cash (US Bank)</div><div class="nw-sub">Investable · Ready to deploy</div></div>
+        <div class="nw-val clr-g editable-val" data-key="cash" onclick="openEdit(event,'cash','Cash Balance ($)')">$<span id="disp-cash">200,000</span></div>
+      </div>
+      <div class="nw-bar-wrap"><div class="nw-bar" id="bar-cash" style="width:22%;background:#4a7c59;"></div></div>
+      <div class="nw-row">
+        <div><div class="nw-label">CDs (Maturing &lt;6 months)</div><div class="nw-sub">~<span class="editable-val" data-key="cdRate" onclick="openEdit(event,'cdRate','CD Interest Rate (%)')">4.5</span>–<span class="editable-val" data-key="cdRateHigh" onclick="openEdit(event,'cdRateHigh','CD Rate High (%)')">5.0</span>% current rate</div></div>
+        <div class="nw-val clr-gold editable-val" data-key="cds" onclick="openEdit(event,'cds','CD Balance ($)')">$<span id="disp-cds">250,000</span></div>
+      </div>
+      <div class="nw-bar-wrap"><div class="nw-bar" id="bar-cds" style="width:28%;background:#92660a;"></div></div>
+
+      <div class="section-divider" style="color:#7c3aed;border-color:#ddd6fe;">🇨🇳 China Assets</div>
+      <div style="margin:8px 0 12px;background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:12px 14px;">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:10px;">
+          <div>
+            <div style="font-size:0.65rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Total Value in CNY ¥</div>
+            <div class="pfx-wrap"><span class="pfx" style="color:#7c3aed;">¥</span><input type="number" class="form-input" id="cnyChinaInput" placeholder="0" step="10000" oninput="syncChinaAssets()" style="padding-left:22px;background:white;border-color:#e9d5ff;"></div>
+          </div>
+          <div style="text-align:center;padding-bottom:8px;">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:2px;">÷ rate</div>
+            <div style="font-size:1.1rem;color:#c4b5fd;">→</div>
+          </div>
+          <div>
+            <div style="font-size:0.65rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">or enter USD $</div>
+            <div class="pfx-wrap"><span class="pfx" style="color:#7c3aed;">$</span><input type="number" class="form-input" id="usdChinaInput" placeholder="0" step="1000" oninput="syncChinaAssetsFromUSD()" style="padding-left:22px;background:white;border-color:#e9d5ff;"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:0.65rem;color:var(--muted);">¥ per $1:</span>
+          <input type="number" class="form-input" id="fxRate" value="7.25" step="0.01" oninput="onFxChange()" style="width:72px;padding:4px 8px;font-size:0.8rem;background:white;">
+          <button onclick="fetchLiveFX()" style="padding:4px 10px;border-radius:5px;border:1px solid #e9d5ff;background:white;color:#7c3aed;font-size:0.7rem;font-weight:600;cursor:pointer;">↻ Live Rate</button>
+          <span id="fxStatus" style="font-size:0.65rem;color:var(--light);"></span>
+          <span style="margin-left:auto;font-size:0.65rem;color:var(--muted);">¥1 = $<span id="fxRateDisplay">7.25</span> · <span id="fxLastUpdated" style="color:var(--light);">manual</span></span>
+        </div>
+      </div>
+      <div class="nw-row">
+        <div><div class="nw-label">China Total (USD)</div><div class="nw-sub">Property, cash, business — combined</div></div>
+        <div class="nw-val clr-p" style="font-weight:700;" id="disp-chinaTotal">$0</div>
+      </div>
+      <div class="nw-bar-wrap"><div class="nw-bar" id="bar-chinaTotal" style="width:0%;background:#7c3aed;"></div></div>
+
+      <div class="divider"></div>
+      <div class="nw-row" style="background:var(--surface2);border-radius:8px;">
+        <div><div class="nw-label" style="font-weight:700;">Total Assets (US + China)</div></div>
+        <div class="nw-val clr-g" style="font-size:1rem;" id="totalAssetsDisplay">$1,630,000+</div>
+      </div>
+    </div>
+
+    <!-- Liabilities + Allocation -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">Liabilities</div>
+        <div class="nw-row">
+          <div><div class="nw-label">Mortgage — Frisco Home</div><div class="nw-sub"><span class="editable-val" data-key="mortgageRate" onclick="openEdit(event,'mortgageRate','Mortgage Rate (%)')">3.375</span>% fixed · Low priority to pay off</div></div>
+          <div class="nw-val clr-r editable-val" data-key="mortgageRemaining" onclick="openEdit(event,'mortgageRemaining','Mortgage Remaining ($)')">-$<span id="disp-mortgageRemaining">130,000</span></div>
+        </div>
+        <div class="nw-bar-wrap"><div class="nw-bar" id="bar-mortgageRemaining" style="width:15%;background:#b91c1c;"></div></div>
+        <div class="nw-row">
+          <div><div class="nw-label">Other Debt</div><div class="nw-sub">Credit cards, auto, student loans</div></div>
+          <div class="nw-val clr-g editable-val" data-key="otherDebt" onclick="openEdit(event,'otherDebt','Other Debt ($)')">$<span id="disp-otherDebt">0</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="nw-row" style="background:var(--surface2);border-radius:8px;">
+          <div><div class="nw-label" style="font-weight:700;">Total Liabilities</div></div>
+          <div class="nw-val clr-r" style="font-size:1rem;" id="totalLiabilitiesDisplay">-$130,000</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Asset Allocation</div>
+        <div class="alloc-visual" id="allocBar">
+          <div class="alloc-seg" style="width:45.3%;background:#2d6e3a;"></div>
+          <div class="alloc-seg" style="width:25%;background:#1e3a6e;"></div>
+          <div class="alloc-seg" style="width:11.9%;background:#4a7c59;"></div>
+          <div class="alloc-seg" style="width:14.9%;background:#92660a;"></div>
+          <div class="alloc-seg" style="width:2.9%;background:#5b21b6;"></div>
+        </div>
+        <div class="legend-row" id="allocLegend"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Key Insights for Michelle</div>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="insightsPanel">
+          <!-- dynamically rendered -->
+        </div>
+      </div>
+
+      <!-- US Small Business Card -->
+      <div class="card" style="border-left:3px solid #c2410c;">
+        <div class="card-title" style="color:#c2410c;">💼 Husband's US Small Business</div>
+        <div class="card-sub">Consulting LLC · Click any value to edit</div>
+
+        <div class="section-divider">Business Value</div>
+        <div class="nw-row" style="align-items:center;">
+          <div><div class="nw-label">Estimated Equity / Value</div><div class="nw-sub">What you'd get if sold today</div></div>
+          <div class="nw-val clr-o" style="display:flex;align-items:center;gap:4px;">$<input id="inp-bizEquity" type="number" value="45000" step="1000" min="0"
+            style="width:100px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;color:#c2410c;border:none;border-bottom:1.5px dashed #c2410c;background:transparent;outline:none;text-align:right;padding:1px 2px;"
+            oninput="NW.bizEquity=parseFloat(this.value)||0;document.getElementById('disp-bizEquity').textContent=new Intl.NumberFormat('en-US').format(NW.bizEquity);refreshNetWorth();"
+            onfocus="this.select()"></div>
+        </div>
+        <div class="nw-bar-wrap"><div class="nw-bar" id="bar-bizEquity" style="width:5%;background:#c2410c;"></div></div>
+        <span id="disp-bizEquity" style="display:none;">45,000</span>
+
+        <div class="section-divider">Revenue & Expenses (Annual)</div>
+        <div class="nw-row" style="align-items:center;">
+          <div><div class="nw-label">Annual Revenue</div><div class="nw-sub">Current or projected</div></div>
+          <div class="nw-val clr-g" style="display:flex;align-items:center;gap:4px;">$<input id="inp-bizRevenue" type="number" value="80000" step="1000" min="0"
+            style="width:100px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;color:#1d4e2a;border:none;border-bottom:1.5px dashed #1d4e2a;background:transparent;outline:none;text-align:right;padding:1px 2px;"
+            oninput="NW.bizRevenue=parseFloat(this.value)||0;document.getElementById('disp-bizRevenue').textContent=new Intl.NumberFormat('en-US').format(NW.bizRevenue);refreshNetWorth();"
+            onfocus="this.select()"></div>
+        </div>
+        <div class="nw-row" style="align-items:center;">
+          <div><div class="nw-label">Annual Expenses</div><div class="nw-sub">Operating costs, subscriptions, etc.</div></div>
+          <div class="nw-val clr-r" style="display:flex;align-items:center;gap:4px;">$<input id="inp-bizExpenses" type="number" value="22000" step="1000" min="0"
+            style="width:100px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;color:#b91c1c;border:none;border-bottom:1.5px dashed #b91c1c;background:transparent;outline:none;text-align:right;padding:1px 2px;"
+            oninput="NW.bizExpenses=parseFloat(this.value)||0;document.getElementById('disp-bizExpenses').textContent=new Intl.NumberFormat('en-US').format(NW.bizExpenses);refreshNetWorth();"
+            onfocus="this.select()"></div>
+        </div>
+        <span id="disp-bizRevenue" style="display:none;">80,000</span>
+        <span id="disp-bizExpenses" style="display:none;">22,000</span>
+        <div class="nw-row" style="background:var(--surface2);border-radius:7px;padding:7px 12px;margin-top:4px;">
+          <div><div class="nw-label" style="font-weight:600;">Net Profit / Loss</div></div>
+          <div class="nw-val" id="bizProfitDisplay" style="font-size:0.9rem;font-weight:700;color:var(--green);">$58,000</div>
+        </div>
+
+        <div class="section-divider">Tax Snapshot</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div class="stat-box" style="padding:10px;">
+            <div class="stat-label">Self-Employment Tax</div>
+            <div class="stat-num clr-r" style="font-size:1rem;" id="bizSETax">$8,193</div>
+            <div class="stat-sub">15.3% on net profit</div>
+          </div>
+          <div class="stat-box" style="padding:10px;">
+            <div class="stat-label">Est. Income Tax</div>
+            <div class="stat-num clr-r" style="font-size:1rem;" id="bizIncomeTax">$11,644</div>
+            <div class="stat-sub">22% federal bracket est.</div>
+          </div>
+          <div class="stat-box" style="padding:10px;">
+            <div class="stat-label">QBI Deduction (20%)</div>
+            <div class="stat-num clr-g" style="font-size:1rem;" id="bizQBI">$10,897</div>
+            <div class="stat-sub">Section 199A savings</div>
+          </div>
+          <div class="stat-box" style="padding:10px;">
+            <div class="stat-label">Solo 401K Room</div>
+            <div class="stat-num clr-b" style="font-size:1rem;" id="bizSolo401k">$37,500</div>
+            <div class="stat-sub">Up to $69K/yr (2024)</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:7px;" id="bizInsights">
+          <div class="alert alert-green">✓ <strong>QBI deduction</strong> saves ~$2,397 in federal tax. Ensure business qualifies (most small businesses do).</div>
+          <div class="alert alert-blue">ℹ <strong>Solo 401K:</strong> Contribute up to $37,500 to shelter profit and reduce taxable income.</div>
+          <div class="alert alert-warn">⚡ <strong>S-Corp election</strong> may reduce self-employment tax once profit consistently exceeds $40K/yr. Consult a CPA.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit popup -->
+  <div class="edit-popup" id="editPopup">
+    <label id="editPopupLabel">Edit Value</label>
+    <input type="number" id="editPopupInput" step="any" min="0">
+    <div class="ep-btns">
+      <button class="ep-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="ep-ok" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 2 · PORTFOLIO OPTIMIZER
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-optimizer">
+  <div class="page-title">Portfolio Optimizer</div>
+  <div class="page-desc">Configure allocation for your $200K cash + $250K CD reinvestment = up to $450K investable.</div>
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">Settings</div>
+        <div class="form-group">
+          <label class="form-label">Total Amount to Invest</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="investAmount" value="450000" min="1000" step="5000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Risk — <span id="riskText" style="color:var(--accent)">Conservative (2/5)</span></label>
+          <input type="range" id="riskSlider" min="1" max="5" value="2" oninput="updateRisk(this)">
+          <div class="slider-row"><span class="s-lo">Preserve Capital</span><span class="s-lo">Max Growth</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asset Classes</label>
+          <div class="chip-group">
+            <span class="chip on" data-cls="etfs">ETFs</span>
+            <span class="chip on" data-cls="stocks">US Stocks</span>
+            <span class="chip on" data-cls="bonds">Bonds</span>
+            <span class="chip on" data-cls="reits">REITs</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Strategy</label>
+          <div class="chip-group">
+            <span class="chip on" data-strat="dividend" onclick="setStrat(this)">Dividend</span>
+            <span class="chip" data-strat="value" onclick="setStrat(this)">Value</span>
+            <span class="chip" data-strat="growth" onclick="setStrat(this)">Growth</span>
+            <span class="chip" data-strat="balanced" onclick="setStrat(this)">Balanced</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="runOptimizer()">Generate Portfolio</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Risk vs. Return</div>
+        <div id="riskReturnChart"><div class="empty"><div class="empty-icon">◎</div><p>Run optimizer first</p></div></div>
+      </div>
+    </div>
+    <div id="optimizerResults">
+      <div class="empty"><div class="empty-icon">◎</div><h3>Configure & Generate</h3><p>Set parameters and click Generate Portfolio.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 3 · DCA PLANNER
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-dca">
+  <div class="page-title">DCA Deployment Planner</div>
+  <div class="page-desc">Deploy your $450K gradually to reduce timing risk. Recommended for conservative investors.</div>
+
+  <!-- CD Alert -->
+  <div class="cd-card">
+    <div class="cd-header"><span style="font-size:1.1rem;">⚡</span><h3>Action Required: $250K CDs Maturing Within 6 Months</h3></div>
+    <p style="font-size:0.75rem;color:#92400e;margin-bottom:12px;">You have a decision to make about your CDs. Choose how to handle them:</p>
+    <div class="cd-options">
+      <div class="cd-option selected" onclick="selectCD(this,'invest')" id="cd-invest">
+        <div class="cd-option-dot"></div>
+        <div class="cd-option-text"><h4>Reinvest all $250K into the market (with DCA)</h4><p>Combine with your $200K cash for a total $450K DCA deployment. Best for long-term growth.</p></div>
+      </div>
+      <div class="cd-option" onclick="selectCD(this,'partial')" id="cd-partial">
+        <div class="cd-option-dot"></div>
+        <div class="cd-option-text"><h4>Keep $100K in new CDs, invest $150K</h4><p>Maintains a conservative fixed-income buffer at ~4.5% while still deploying significant capital.</p></div>
+      </div>
+      <div class="cd-option" onclick="selectCD(this,'renew')" id="cd-renew">
+        <div class="cd-option-dot"></div>
+        <div class="cd-option-text"><h4>Renew all CDs for another term</h4><p>Lowest risk. ~4.5–5% guaranteed return but may underperform a diversified portfolio long-term.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">DCA Settings</div>
+        <div class="form-group">
+          <label class="form-label">Total to Deploy</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="dcaTotal" value="450000" min="1000" step="5000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deployment Period</label>
+          <input type="range" id="dcaMonths" min="3" max="24" value="12" oninput="updateDcaLabel(this)">
+          <div class="slider-row"><span class="s-lo">3 months</span><span class="slider-val" id="dcaMonthsVal">12 months</span><span class="s-lo">24 months</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Keep in Reserve (%)</label>
+          <input type="range" id="dcaReserve" min="0" max="20" value="5" oninput="updateReserveLabel(this)">
+          <div class="slider-row"><span class="s-lo">0%</span><span class="slider-val" id="dcaReserveVal">5% — $22,500</span><span class="s-lo">20%</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expected Annual Return</label>
+          <input type="range" id="dcaReturn" min="4" max="14" value="9" step="0.5" oninput="updateReturnLabel(this)">
+          <div class="slider-row"><span class="s-lo">4%</span><span class="slider-val" id="dcaReturnVal">9.0%/yr</span><span class="s-lo">14%</span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="runDCA()">Calculate Plan</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Why DCA for Michelle?</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;gap:9px;align-items:flex-start;"><span>🛡</span><div><div style="font-size:0.78rem;font-weight:600;margin-bottom:1px;">Reduces timing risk</div><div style="font-size:0.7rem;color:var(--muted);">$450K is a large lump sum — spreading over 12 months reduces the risk of investing at a market peak.</div></div></div>
+          <div style="display:flex;gap:9px;align-items:flex-start;"><span>💵</span><div><div style="font-size:0.78rem;font-weight:600;margin-bottom:1px;">Cash earns 4.5% while waiting</div><div style="font-size:0.7rem;color:var(--muted);">Park uninvested cash in a HYSA or money market fund while you deploy monthly.</div></div></div>
+          <div style="display:flex;gap:9px;align-items:flex-start;"><span>🧠</span><div><div style="font-size:0.78rem;font-weight:600;margin-bottom:1px;">Removes emotion & timing</div><div style="font-size:0.7rem;color:var(--muted);">Fixed monthly investment means no agonizing over "is now a good time?"</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="dcaResults">
+      <div class="empty"><div class="empty-icon">📅</div><h3>Configure & Calculate</h3><p>Set your DCA parameters and click Calculate Plan.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 4 · 529 COLLEGE PLANNER
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-college">
+  <div class="page-title">529 College Savings Planner</div>
+  <div class="page-desc">Texas has no state income tax benefit for 529 contributions, but federal tax-free growth still makes 529s powerful.</div>
+
+  <div class="kid-tabs">
+    <button class="kid-tab active" onclick="switchKid(0,this)">👦 Child 1 — Age 9</button>
+    <button class="kid-tab" onclick="switchKid(1,this)">👶 Child 2 — Age 3</button>
+  </div>
+
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">529 Settings</div>
+        <div class="form-group">
+          <label class="form-label">Child's Current Age</label>
+          <input type="number" class="form-input" id="kidAge" value="9" min="0" max="17">
+        </div>
+        <div class="form-group">
+          <label class="form-label">College Start Age</label>
+          <input type="number" class="form-input" id="collegeAge" value="18" min="16" max="22">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current 529 Balance</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="balance529" value="0" min="0" step="1000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monthly Contribution</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="monthly529" value="500" min="0" step="50"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">One-Time Lump Sum Now</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="lump529" value="20000" min="0" step="1000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target University Type</label>
+          <select class="form-input" id="uniType" onchange="updateUniversityLabel()">
+            <option value="public">Public (In-state) ~$35K/yr</option>
+            <option value="private" selected>Private ~$65K/yr</option>
+            <option value="ivyplus">Ivy/Elite ~$85K/yr</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="run529()">Calculate College Plan</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">529 Key Facts for Michelle</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="alert alert-green">✓ <strong>Tax-free growth</strong> — earnings never taxed if used for qualified education expenses.</div>
+          <div class="alert alert-blue">ℹ <strong>Texas (no state income tax)</strong> — no extra state deduction, but still federally powerful.</div>
+          <div class="alert alert-green">✓ <strong>Superfunding</strong> — you can contribute up to 5 years of gift tax exclusions at once ($90K/child or $180K/child from both parents) without gift tax.</div>
+          <div class="alert alert-warn">⚡ <strong>Non-US citizen parents</strong> can open and contribute to 529s for children who will study in the US — confirm eligibility with the plan provider.</div>
+          <div class="alert alert-blue">ℹ If child doesn't use it, funds can be rolled to another family member or (since 2024) up to $35K rolled to a Roth IRA.</div>
+        </div>
+      </div>
+    </div>
+    <div id="college529Results">
+      <div class="empty"><div class="empty-icon">🎓</div><h3>Configure & Calculate</h3><p>Set parameters and click Calculate College Plan.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 5 · 401K RETIREMENT
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-retirement">
+  <div class="page-title">401K Retirement Projection</div>
+  <div class="page-desc">Your combined $420K in 401K accounts — projected to retirement age.</div>
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">401K Settings</div>
+        <div class="form-group">
+          <label class="form-label">Current Combined 401K Balance</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="k401Balance" value="420000" min="0" step="1000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Current Age</label>
+          <input type="number" class="form-input" id="currentAge" value="38" min="20" max="65">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Retirement Age</label>
+          <input type="number" class="form-input" id="retireAge" value="65" min="50" max="75">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Annual Contribution (both)</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="k401Annual" value="46000" min="0" step="1000"></div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;">2024 limit: $23K/person ($46K combined). Catch-up at 50+: +$7.5K/person.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expected Annual Return</label>
+          <input type="range" id="k401Return" min="4" max="12" value="7" step="0.5" oninput="updateK401Label(this)">
+          <div class="slider-row"><span class="s-lo">4%</span><span class="slider-val" id="k401ReturnVal">7.0%/yr</span><span class="s-lo">12%</span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="runRetirement()">Project Retirement</button>
+      </div>
+      <div class="card">
+        <div class="card-title">401K Key Points</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="alert alert-green">✓ <strong>$420K at ~38</strong> is ahead of the median for your age. Strong foundation.</div>
+          <div class="alert alert-blue">ℹ <strong>Cannot touch until 59½</strong> without 10% penalty. Plan liquid investments separately.</div>
+          <div class="alert alert-green">✓ <strong>Traditional 401K reduces taxable income</strong> now. Important since you may have China business income to offset.</div>
+          <div class="alert alert-warn">⚡ Verify your <strong>eligibility to contribute</strong> to a 401K based on your current visa/work status — confirm with your employer.</div>
+          <div class="alert alert-blue">ℹ Consider <strong>Roth conversion ladder</strong> if you move to a lower-income year — convert traditional 401K to Roth tax-efficiently.</div>
+        </div>
+      </div>
+    </div>
+    <div id="retirementResults">
+      <div class="empty"><div class="empty-icon">🏖</div><h3>Configure & Project</h3><p>Set parameters and click Project Retirement.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 6 · REBALANCE
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-rebalance">
+  <div class="page-title">Portfolio Rebalance Tool</div>
+  <div class="page-desc">Annual rebalancing keeps your allocation on target. Recommended: rebalance once a year or when any position drifts ±5%.</div>
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card">
+        <div class="card-title">Rebalance Settings</div>
+        <div class="form-group">
+          <label class="form-label">Portfolio Value</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="rebalAmount" value="450000" min="1000" step="5000"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Drift Threshold (trigger when off by)</label>
+          <input type="range" id="driftSlider" min="2" max="10" value="5" oninput="document.getElementById('driftVal').textContent=this.value+'%'">
+          <div class="slider-row"><span class="s-lo">Tight 2%</span><span class="slider-val" id="driftVal">5%</span><span class="s-lo">Relaxed 10%</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time Horizon</label>
+          <input type="range" id="horizonSlider" min="5" max="25" value="15" oninput="document.getElementById('horizonVal').textContent=this.value+' yrs'">
+          <div class="slider-row"><span class="s-lo">5 yrs</span><span class="slider-val" id="horizonVal">15 yrs</span><span class="s-lo">25 yrs</span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="runRebalance()">Analyze Rebalance</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Projection</div>
+        <div id="projectionChart"><div class="empty" style="padding:20px;"><p>Run analysis to see projection.</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Rebalance Recommendations</div>
+      <div id="rebalResults"><div class="empty"><div class="empty-icon">↺</div><h3>Run Analysis</h3><p>Set parameters and click Analyze.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PAGE 7 · CD RATES
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-cdrates">
+  <div class="page-title">Best CD Rates — Market Overview</div>
+  <div class="page-desc">Top-yielding CDs as of Feb 26, 2026 · Fed funds rate: 3.50–3.75% · Rates trending down — locking in now is advisable.</div>
+
+  <!-- Market context banner -->
+  <div style="background:linear-gradient(135deg,#1e3a6e,#2d5a9e);border-radius:12px;padding:18px 24px;color:white;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:0.65rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Market Best Rate (Feb 2026)</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;line-height:1;">4.20% <span style="font-size:1rem;font-weight:400;opacity:0.7;">APY</span></div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.6);margin-top:4px;">Bread Savings · 6-month · $1,500 min</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;text-align:center;">
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:3px;">Fed Rate</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.95rem;font-weight:600;">3.50–3.75%</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;text-align:center;">
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:3px;">Trend</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.95rem;font-weight:600;color:#fca5a5;">↓ Falling</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:10px 14px;text-align:center;">
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:3px;">Next Fed Meeting</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.95rem;font-weight:600;">Mar 17–18</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start;">
+
+    <!-- Left: rates table -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Term filter tabs -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;" id="termFilters">
+        <button class="chip on" onclick="filterCDs('all',this)">All Terms</button>
+        <button class="chip" onclick="filterCDs('3mo',this)">3 Month</button>
+        <button class="chip" onclick="filterCDs('6mo',this)">6 Month</button>
+        <button class="chip" onclick="filterCDs('1yr',this)">1 Year</button>
+        <button class="chip" onclick="filterCDs('2yr',this)">2 Year</button>
+        <button class="chip" onclick="filterCDs('5yr',this)">5 Year</button>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div class="card-title" style="margin:0;">Top CD Rates by Institution</div>
+          <div style="font-size:0.65rem;color:var(--muted);">Sources: Bankrate · NerdWallet · Fortune/Curinos · Feb 26, 2026</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="holdings-table" id="cdTable">
+            <thead>
+              <tr>
+                <th>Institution</th>
+                <th>Term</th>
+                <th>APY</th>
+                <th>Min. Deposit</th>
+                <th>Early Withdrawal</th>
+                <th>Notes</th>
+                <th>On $250K</th>
+              </tr>
+            </thead>
+            <tbody id="cdTableBody"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px 18px;border-top:1px solid var(--border);background:var(--surface2);">
+          <div style="font-size:0.65rem;color:var(--muted);">⚠ Rates are subject to change daily. Verify directly with institution before opening. All listed banks are FDIC-insured.</div>
+        </div>
+      </div>
+
+      <!-- National averages comparison -->
+      <div class="card">
+        <div class="card-title">National Average vs. Best Available</div>
+        <div class="card-sub">How much more you can earn by shopping around (on $250K)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="avgComparison"></div>
+      </div>
+
+    </div>
+
+    <!-- Right: calculator + context -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- CD calculator -->
+      <div class="card">
+        <div class="card-title">💰 CD Earnings Calculator</div>
+        <div class="form-group">
+          <label class="form-label">Deposit Amount</label>
+          <div class="pfx-wrap"><span class="pfx">$</span><input type="number" class="form-input" id="cdCalcAmount" value="250000" oninput="calcCD()"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">APY (%)</label>
+          <input type="range" id="cdCalcAPY" min="3.0" max="4.5" step="0.05" value="4.15" oninput="calcCD();document.getElementById('cdAPYDisplay').textContent=parseFloat(this.value).toFixed(2)+'%'">
+          <div class="slider-row"><span class="s-lo">3.0%</span><span class="slider-val" id="cdAPYDisplay">4.15%</span><span class="s-lo">4.5%</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Term</label>
+          <select class="form-input" id="cdCalcTerm" onchange="calcCD()">
+            <option value="0.25">3 months</option>
+            <option value="0.5" selected>6 months</option>
+            <option value="1">1 year</option>
+            <option value="2">2 years</option>
+            <option value="3">3 years</option>
+            <option value="5">5 years</option>
+          </select>
+        </div>
+        <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:10px;padding:14px;margin-top:4px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div>
+              <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Interest Earned</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--green);" id="cdCalcInterest">$0</div>
+            </div>
+            <div>
+              <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Total at Maturity</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--blue);" id="cdCalcTotal">$0</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Monthly Income</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.9rem;font-weight:600;color:var(--green);" id="cdCalcMonthly">$0</div>
+            </div>
+            <div>
+              <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">vs. Nat. Avg (1.88%)</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:0.9rem;font-weight:600;color:var(--gold);" id="cdCalcExtra">+$0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CD ladder suggestion -->
+      <div class="card">
+        <div class="card-title">🪜 CD Ladder Strategy</div>
+        <div class="card-sub">Split $250K across terms for flexibility + yield</div>
+        <div style="display:flex;flex-direction:column;gap:6px;" id="cdLadder"></div>
+        <div class="alert alert-blue" style="margin-top:10px;">ℹ A ladder lets you access funds regularly while keeping most money in higher-yield longer terms. One CD matures every 6–12 months.</div>
+      </div>
+
+      <!-- Context -->
+      <div class="card">
+        <div class="card-title">Rate Outlook & Tips</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="alert alert-warn">⚡ <strong>Rates are falling.</strong> The Fed cut 3× in 2025. Lock in now before another cut at Mar 17–18 meeting.</div>
+          <div class="alert alert-green">✓ <strong>Online banks win.</strong> Northern Bank Direct, Bread Savings, and Marcus consistently beat brick-and-mortar banks by 1–2%.</div>
+          <div class="alert alert-blue">ℹ <strong>Short-term CDs lead.</strong> Unusually, 3–6 month CDs currently beat 1–5 year CDs — inverted yield curve effect.</div>
+          <div class="alert alert-green">✓ <strong>FDIC insured up to $250K</strong> per depositor per bank. Split across 2 banks if depositing $250K+ each.</div>
+          <div class="alert alert-warn">⚡ <strong>Your $250K CD matures soon.</strong> Reinvesting at 4.15% instead of letting it auto-renew at the bank's lower rate saves thousands.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- /.main -->
+</div><!-- /.app -->
+
+<script>
+// ══════════════════════════
+// DATA
+// ══════════════════════════
+const ASSETS = {
+  etfs:[
+    {ticker:'VOO', name:'Vanguard S&P 500 ETF',            type:'ETF',      sector:'Broad Market',       ret:13.2,risk:15.4,div:1.4,color:'#2d5a27',rs:2},
+    {ticker:'VTI', name:'Vanguard Total Market ETF',        type:'ETF',      sector:'Broad Market',       ret:12.8,risk:15.1,div:1.5,color:'#3a7a35',rs:2},
+    {ticker:'VIG', name:'Vanguard Dividend Appreciation',   type:'ETF',      sector:'Dividend',           ret:10.8,risk:13.2,div:1.9,color:'#4a7c59',rs:1},
+    {ticker:'SCHD',name:'Schwab US Dividend Equity ETF',    type:'ETF',      sector:'Dividend',           ret:11.2,risk:14.8,div:3.5,color:'#5a9a6a',rs:1},
+    {ticker:'VYM', name:'Vanguard High Dividend Yield ETF', type:'ETF',      sector:'Dividend',           ret:10.1,risk:13.6,div:3.2,color:'#6ab87a',rs:1},
+  ],
+  stocks:[
+    {ticker:'JNJ', name:'Johnson & Johnson',                type:'Stock',    sector:'Healthcare',         ret:7.4, risk:14.2,div:3.1,color:'#c8a96e',rs:1},
+    {ticker:'PG',  name:'Procter & Gamble',                 type:'Stock',    sector:'Consumer Staples',   ret:9.1, risk:13.8,div:2.5,color:'#b8860b',rs:1},
+    {ticker:'KO',  name:'Coca-Cola Company',                type:'Stock',    sector:'Consumer Staples',   ret:8.2, risk:12.4,div:3.1,color:'#a0740a',rs:1},
+    {ticker:'BRK.B',name:'Berkshire Hathaway B',            type:'Stock',    sector:'Financial',          ret:12.8,risk:16.4,div:0,  color:'#c8a96e',rs:2},
+    {ticker:'JPM', name:'JPMorgan Chase',                   type:'Stock',    sector:'Financial',          ret:14.2,risk:22.8,div:2.3,color:'#d4b896',rs:3},
+  ],
+  bonds:[
+    {ticker:'BND', name:'Vanguard Total Bond Market',       type:'Bond ETF', sector:'Investment Grade',   ret:3.2, risk:5.8, div:4.1,color:'#6c5ce7',rs:1},
+    {ticker:'TIPS',name:'iShares TIPS Bond ETF',            type:'Bond ETF', sector:'Inflation-Protected',ret:4.1, risk:6.2, div:3.2,color:'#9b8fff',rs:1},
+    {ticker:'AGG', name:'iShares Core US Aggregate Bond',   type:'Bond ETF', sector:'Investment Grade',   ret:3.4, risk:5.4, div:3.8,color:'#5b4fdf',rs:1},
+  ],
+  reits:[
+    {ticker:'VNQ', name:'Vanguard Real Estate ETF',         type:'REIT ETF', sector:'Real Estate',        ret:8.4, risk:18.2,div:4.2,color:'#c0392b',rs:2},
+    {ticker:'O',   name:'Realty Income Corp.',              type:'REIT',     sector:'Retail REIT',        ret:9.1, risk:16.8,div:5.6,color:'#e74c3c',rs:2},
+  ],
+};
+const RISK_LABELS=['','Capital Preservation (1/5)','Conservative (2/5)','Balanced (3/5)','Moderate Growth (4/5)','Aggressive (5/5)'];
+let activeClasses=new Set(['etfs','stocks','bonds','reits']);
+let activeStrat='dividend';
+let currentKid=0;
+
+// ══════════════════════════
+// NAV
+// ══════════════════════════
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'cdrates' && !cdInitialized) {
+    cdInitialized = true;
+    renderCDTable();
+    calcCD();
+    renderCDLadder();
+  }
+}
+let cdInitialized = false;
+
+// ══════════════════════════
+// CONTROLS
+// ══════════════════════════
+document.querySelectorAll('[data-cls]').forEach(c=>{
+  c.addEventListener('click',()=>{const k=c.dataset.cls;if(activeClasses.has(k)){activeClasses.delete(k);c.classList.remove('on');}else{activeClasses.add(k);c.classList.add('on');}});
+});
+function setStrat(el){document.querySelectorAll('[data-strat]').forEach(c=>c.classList.remove('on'));el.classList.add('on');activeStrat=el.dataset.strat;}
+function updateRisk(el){const v=parseInt(el.value);document.getElementById('riskText').textContent=RISK_LABELS[v];el.style.setProperty('--pct',((v-1)/4*100)+'%');}
+function updateDcaLabel(el){document.getElementById('dcaMonthsVal').textContent=el.value+' months';}
+function updateReserveLabel(el){const t=parseFloat(document.getElementById('dcaTotal').value)||450000;document.getElementById('dcaReserveVal').textContent=el.value+'% — '+fmt(t*el.value/100);}
+function updateReturnLabel(el){document.getElementById('dcaReturnVal').textContent=parseFloat(el.value).toFixed(1)+'%/yr';}
+function updateK401Label(el){document.getElementById('k401ReturnVal').textContent=parseFloat(el.value).toFixed(1)+'%/yr';}
+function updateUniversityLabel(){}
+
+function selectCD(el,type){document.querySelectorAll('.cd-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');
+  const map={invest:450000,partial:350000,renew:200000};
+  document.getElementById('dcaTotal').value=map[type];
+  updateReserveLabel(document.getElementById('dcaReserve'));
+}
+
+function switchKid(idx,el){currentKid=idx;document.querySelectorAll('.kid-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.getElementById('kidAge').value=idx===0?9:3;
+  document.getElementById('lump529').value=idx===0?20000:25000;
+  document.getElementById('monthly529').value=idx===0?500:400;
+  document.getElementById('balance529').value=0;
+}
+
+// ══════════════════════════
+// HELPERS
+// ══════════════════════════
+function fmt(n){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);}
+function pct(n,d=1){return n.toFixed(d)+'%';}
+function svgPath(pts,px,py,W,H,years){return pts.map((p,i)=>`${i===0?'M':'L'}${px(p.y,years,W)},${py(p.v,pts,H)}`).join(' ');}
+
+// ══════════════════════════
+// OPTIMIZER
+// ══════════════════════════
+function scoreAsset(a,risk){
+  let s=(a.ret/a.risk)*8;
+  if(a.rs>risk)s-=(a.rs-risk)*12;
+  if(activeStrat==='dividend')s+=a.div*4;
+  if(activeStrat==='value'&&['Consumer Staples','Financial','Healthcare'].includes(a.sector))s+=6;
+  if(activeStrat==='growth')s+=a.ret*0.25;
+  if(activeStrat==='balanced')s+=(a.ret/a.risk)*4+a.div*2;
+  s+=(5-a.risk/5)*(4-risk);
+  return Math.max(s,0.01);
+}
+function buildPortfolio(risk,amount){
+  let pool=[];activeClasses.forEach(k=>{if(ASSETS[k])pool=pool.concat(ASSETS[k]);});
+  if(!pool.length)return null;
+  const scored=pool.map(a=>({...a,score:scoreAsset(a,risk)})).sort((a,b)=>b.score-a.score);
+  const maxH=risk<=2?7:risk===3?9:10;
+  const sel=scored.slice(0,Math.min(maxH,scored.length));
+  const total=sel.reduce((s,a)=>s+a.score,0);
+  const holdings=sel.map(a=>({...a,weight:a.score/total,dollars:(a.score/total)*amount})).sort((a,b)=>b.weight-a.weight);
+  const portRet=holdings.reduce((s,h)=>s+h.weight*h.ret,0);
+  const portRisk=Math.sqrt(holdings.reduce((s,h)=>s+Math.pow(h.weight*h.risk,2),0))*1.3;
+  const portDiv=holdings.reduce((s,h)=>s+h.weight*h.div,0);
+  return{holdings,portRet,portRisk,portDiv,sharpe:portRet/portRisk,amount};
+}
+function runOptimizer(){
+  const risk=parseInt(document.getElementById('riskSlider').value);
+  const amount=parseFloat(document.getElementById('investAmount').value)||450000;
+  const port=buildPortfolio(risk,amount);
+  if(!port){alert('Select at least one asset class.');return;}
+  renderOptimizer(port);renderRiskReturn(port);
+}
+function renderOptimizer(port){
+  const{holdings,portRet,portRisk,portDiv,sharpe,amount}=port;
+  const bull=amount*(1+(portRet+portRisk*0.6)/100);
+  const base=amount*(1+portRet/100);
+  const bear=amount*(1+(portRet-portRisk*1.1)/100);
+  const income=amount*portDiv/100;
+  const allocBar=holdings.map(h=>`<div class="alloc-seg" style="width:${(h.weight*100).toFixed(1)}%;background:${h.color};"></div>`).join('');
+  const legend=holdings.map(h=>`<div class="legend-dot"><div style="width:7px;height:7px;border-radius:2px;background:${h.color};"></div><span>${h.ticker} ${pct(h.weight*100)}</span></div>`).join('');
+  const rows=holdings.map((h,i)=>{const mW=holdings[0].weight;return`<tr style="animation:fadeIn 0.3s ${i*0.04}s ease both;">
+    <td><span class="ticker-badge" style="background:${h.color}18;color:${h.color};border:1px solid ${h.color}30;">${h.ticker}</span></td>
+    <td><div style="font-weight:600;font-size:0.78rem;">${h.name}</div><div style="font-size:0.66rem;color:var(--muted);">${h.type}·${h.sector}</div></td>
+    <td><div style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent);margin-bottom:3px;">${pct(h.weight*100)}</div><div class="wbar-track"><div class="wbar-fill" style="width:${(h.weight/mW*100).toFixed(0)}%;background:${h.color};"></div></div></td>
+    <td style="font-family:'IBM Plex Mono',monospace;">${fmt(h.dollars)}</td>
+    <td><span class="tag" style="background:${h.color}15;color:${h.color};">${pct(h.ret)}/yr</span></td>
+    <td style="font-family:'IBM Plex Mono',monospace;color:var(--gold);">${h.div>0?pct(h.div):'—'}</td>
+  </tr>`;}).join('');
+  const incomeAlert=income>=10000
+    ?`<div class="alert alert-green">✓ Projected dividends <strong>${fmt(income)}/yr</strong> meet your $10K+ annual income goal.</div>`
+    :`<div class="alert alert-warn">⚠ Projected dividends <strong>${fmt(income)}/yr</strong> are below your $10K+ income goal. Switch to Dividend strategy.</div>`;
+  document.getElementById('optimizerResults').innerHTML=`<div style="display:flex;flex-direction:column;gap:16px;animation:fadeIn 0.3s ease;">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">Expected Return</div><div class="stat-num clr-g">+${pct(portRet)}</div><div class="stat-sub">Annual weighted avg.</div></div>
+      <div class="stat-box"><div class="stat-label">Volatility</div><div class="stat-num clr-b">${pct(portRisk)}</div><div class="stat-sub">${portRisk<12?'Very Low':portRisk<17?'Low':'Moderate'} risk</div></div>
+      <div class="stat-box"><div class="stat-label">Sharpe Ratio</div><div class="stat-num ${sharpe>1?'clr-g':sharpe>0.5?'clr-gold':'clr-r'}">${sharpe.toFixed(2)}</div><div class="stat-sub">${sharpe>1?'Excellent':sharpe>0.5?'Good':'Fair'}</div></div>
+      <div class="stat-box"><div class="stat-label">Annual Dividends</div><div class="stat-num clr-gold">${fmt(income)}</div><div class="stat-sub">${pct(portDiv)} yield</div></div>
+    </div>
+    ${incomeAlert}
+    <div class="card"><div class="card-title">Allocation</div><div class="alloc-visual">${allocBar}</div><div class="legend-row">${legend}</div></div>
+    <div class="card" style="overflow-x:auto;"><div class="card-title">Holdings</div>
+      <table class="holdings-table"><thead><tr><th>Ticker</th><th>Name</th><th>Weight</th><th>Amount</th><th>Hist.Return</th><th>Yield</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="card"><div class="card-title">1-Year Scenarios on ${fmt(amount)}</div>
+      <div class="scenario-grid">
+        <div class="scenario-card"><div class="scenario-icon">🐂</div><div class="scenario-label">Bull</div><div class="scenario-amount clr-g">${fmt(bull)}</div><div class="scenario-pct">+${pct((bull/amount-1)*100)}</div></div>
+        <div class="scenario-card" style="border-color:var(--accent);background:var(--surface2);"><div class="scenario-icon">📊</div><div class="scenario-label">Base</div><div class="scenario-amount clr-b">${fmt(base)}</div><div class="scenario-pct">+${pct((base/amount-1)*100)}</div></div>
+        <div class="scenario-card"><div class="scenario-icon">🐻</div><div class="scenario-label">Bear</div><div class="scenario-amount ${bear<amount?'clr-r':'clr-g'}">${fmt(bear)}</div><div class="scenario-pct">${bear<amount?'':'+'}${pct((bear/amount-1)*100)}</div></div>
+      </div></div>
+  </div>`;
+}
+function renderRiskReturn(port){
+  const mR=Math.max(...port.holdings.map(h=>h.ret));
+  document.getElementById('riskReturnChart').innerHTML=`<div class="bar-chart">${port.holdings.map(h=>`
+    <div class="bar-row"><div class="bar-name">${h.ticker}</div><div class="bar-track"><div class="bar-fill" style="width:${(h.ret/mR*100).toFixed(0)}%;background:${h.color};"></div></div><div class="bar-val">${pct(h.ret)}/${pct(h.risk)}</div></div>`).join('')}</div>`;
+}
+
+// ══════════════════════════
+// DCA
+// ══════════════════════════
+function runDCA(){
+  const total=parseFloat(document.getElementById('dcaTotal').value)||450000;
+  const months=parseInt(document.getElementById('dcaMonths').value);
+  const reservePct=parseInt(document.getElementById('dcaReserve').value);
+  const annRet=parseFloat(document.getElementById('dcaReturn').value)/100;
+  const cashRate=0.045;
+  const reserve=total*reservePct/100;
+  const deployable=total-reserve;
+  const monthly=deployable/months;
+  const mRet=Math.pow(1+annRet,1/12)-1;
+  const mCash=Math.pow(1+cashRate,1/12)-1;
+  let portValue=0,cashBal=deployable;
+  const months_arr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const sm=new Date().getMonth();
+  const schedule=[];
+  for(let m=0;m<months;m++){
+    const ci=cashBal*mCash;cashBal=cashBal-monthly+ci;
+    portValue=(portValue+monthly)*(1+mRet);
+    schedule.push({month:m+1,label:months_arr[(sm+m)%12]+' '+(new Date().getFullYear()+Math.floor((sm+m)/12)),invest:monthly,invested:(m+1)*monthly,portValue,cashBal:Math.max(cashBal,0)});
+  }
+  const projYears=15;const fVal=schedule[schedule.length-1].portValue;
+  const projData=[];for(let y=0;y<=projYears;y++)projData.push({y,v:fVal*Math.pow(1+annRet,y)});
+
+  // SVG
+  const W=520,H=180;
+  const maxV=Math.max(...schedule.map(s=>s.portValue));
+  const px=(m,tot,w)=>(m/tot)*(w-40)+20;
+  const py=(v,arr,h)=>h-((v-0)/(Math.max(...arr.map(p=>p.portValue||p.v))-0))*(h-20)-10;
+  const portPath=schedule.map((s,i)=>`${i===0?'M':'L'}${px(s.month,months,W)},${H-((s.portValue/maxV)*(H-20))-10}`).join(' ');
+  const investPath=schedule.map((s,i)=>`${i===0?'M':'L'}${px(s.month,months,W)},${H-((s.invested/maxV)*(H-20))-10}`).join(' ');
+
+  const showRows=months<=12?schedule:[...schedule.slice(0,5),null,schedule[schedule.length-1]];
+  const tableRows=showRows.map(s=>{
+    if(!s)return`<tr><td colspan="5" style="text-align:center;color:var(--light);font-size:0.7rem;padding:6px;">· · ·</td></tr>`;
+    return`<tr><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;background:var(--tag-bg);color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:0.7rem;font-weight:700;">Mo.${s.month}</span></td>
+      <td style="font-size:0.7rem;color:var(--muted);">${s.label}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${fmt(s.invest)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmt(s.invested)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;color:var(--green);font-weight:700;">${fmt(s.portValue)}</td></tr>`;
+  }).join('');
+
+  document.getElementById('dcaResults').innerHTML=`<div style="display:flex;flex-direction:column;gap:16px;animation:fadeIn 0.3s ease;">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">Monthly Investment</div><div class="stat-num clr-g">${fmt(monthly)}</div><div class="stat-sub">${months} months</div></div>
+      <div class="stat-box"><div class="stat-label">Reserve (Liquid)</div><div class="stat-num clr-gold">${fmt(reserve)}</div><div class="stat-sub">HYSA / Money Market</div></div>
+      <div class="stat-box"><div class="stat-label">Value After Deploy</div><div class="stat-num clr-b">${fmt(fVal)}</div><div class="stat-sub">Est. at ${pct(annRet*100)} return</div></div>
+      <div class="stat-box"><div class="stat-label">15-yr Projection</div><div class="stat-num clr-g">${fmt(projData[projData.length-1].v)}</div><div class="stat-sub">From end of DCA</div></div>
+    </div>
+    <div class="card"><div class="card-title">Deployment Chart</div>
+      <svg viewBox="0 0 ${W} ${H}" class="chart-svg" style="height:${H}px;">
+        <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1d4e2a" stop-opacity="0.12"/><stop offset="100%" stop-color="#1d4e2a" stop-opacity="0.01"/></linearGradient></defs>
+        ${[0.25,0.5,0.75].map(f=>`<line x1="20" y1="${H-10-(f*(H-20))}" x2="${W-20}" y2="${H-10-(f*(H-20))}" stroke="#e0dbd2" stroke-width="1"/>`).join('')}
+        <path d="${investPath} L${px(months,months,W)},${H-10} L${px(1,months,W)},${H-10} Z" fill="url(#ag)"/>
+        <path d="${investPath}" fill="none" stroke="#92660a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <path d="${portPath}" fill="none" stroke="#1d4e2a" stroke-width="2.5"/>
+      </svg>
+      <div class="proj-x-row"><span>Month 1</span><span>Month ${months}</span></div>
+      <div style="display:flex;gap:14px;margin-top:6px;font-size:0.68rem;">
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2px;background:#1d4e2a;"></div><span style="color:var(--muted)">Portfolio value</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2px;background:#92660a;border-top:1px dashed #92660a;"></div><span style="color:var(--muted)">Total invested</span></div>
+      </div>
+    </div>
+    <div class="card" style="overflow-x:auto;"><div class="card-title">Deployment Schedule</div>
+      <table class="holdings-table"><thead><tr><th>Month</th><th>Date</th><th>Monthly In</th><th>Total Invested</th><th>Est. Portfolio Value</th></tr></thead><tbody>${tableRows}</tbody></table>
+      <div class="alert alert-blue" style="margin-top:10px;">💡 Park uninvested ${fmt(deployable/2)} (avg.) in HYSA at ~4.5%/yr while deploying. Estimated interest earned during deployment: <strong>${fmt(deployable*0.045*(months/24))}</strong></div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════
+// 529 COLLEGE
+// ══════════════════════════
+function run529(){
+  const kidAge=parseInt(document.getElementById('kidAge').value)||9;
+  const collegeAge=parseInt(document.getElementById('collegeAge').value)||18;
+  const balance=parseFloat(document.getElementById('balance529').value)||0;
+  const monthly=parseFloat(document.getElementById('monthly529').value)||500;
+  const lump=parseFloat(document.getElementById('lump529').value)||20000;
+  const uniType=document.getElementById('uniType').value;
+  const years=Math.max(collegeAge-kidAge,1);
+  const annRet=0.072; // 529 moderate allocation
+  const mRet=Math.pow(1+annRet,1/12)-1;
+  const costMap={public:35000,private:65000,ivyplus:85000};
+  const inflationRate=0.05;
+  const annualCost=costMap[uniType];
+  const futureCostY1=annualCost*Math.pow(1+inflationRate,years);
+  const totalNeeded=futureCostY1*((1-Math.pow(1+inflationRate/4,-16))/(inflationRate/4)); // 4 years
+  // Simple 4-year sum
+  let totalNeededSimple=0;
+  for(let y=0;y<4;y++)totalNeededSimple+=annualCost*Math.pow(1+inflationRate,years+y);
+
+  // Grow current balance + lump + monthly
+  let val=(balance+lump)*Math.pow(1+annRet,years);
+  for(let m=0;m<years*12;m++)val=val*(1+mRet)+monthly;
+  const valNoLump=(balance*Math.pow(1+annRet,years));
+  let valMonthlyOnly=0;for(let m=0;m<years*12;m++)valMonthlyOnly=(valMonthlyOnly+monthly)*(1+mRet);
+  const totalSaved=val;
+  const gap=Math.max(totalNeededSimple-totalSaved,0);
+  const gapCovered=Math.min(totalSaved/totalNeededSimple*100,100);
+
+  // Build year-by-year
+  const yearData=[];let running=(balance+lump);
+  for(let y=1;y<=years;y++){for(let m=0;m<12;m++)running=running*(1+mRet)+monthly;yearData.push({y,v:running});}
+
+  // SVG
+  const W=520,H=160;
+  const maxV=Math.max(...yearData.map(d=>d.v),totalNeededSimple);
+  const px=y=>(y/years)*(W-40)+20;
+  const py=v=>H-((v/maxV)*(H-20))-10;
+  const linePath=yearData.map((d,i)=>`${i===0?'M':'L'}${px(d.y)},${py(d.v)}`).join(' ');
+  const needLine=`M${px(0)},${py(totalNeededSimple)} L${px(years)},${py(totalNeededSimple)}`;
+  const milestones=[
+    {label:'College Starts',year:years,val:totalSaved,note:`Age ${collegeAge}`},
+    {label:'Year 2 Cost',year:years+1,val:annualCost*Math.pow(1+inflationRate,years+1),note:'Estimated'},
+    {label:'Graduation',year:years+4,val:totalSaved-totalNeededSimple*0.9,note:'Balance remaining'},
+  ];
+
+  const coverageColor=gapCovered>=90?'clr-g':gapCovered>=60?'clr-gold':'clr-r';
+  const childName=currentKid===0?'Child 1 (Age 9)':'Child 2 (Age 3)';
+
+  document.getElementById('college529Results').innerHTML=`<div style="display:flex;flex-direction:column;gap:16px;animation:fadeIn 0.3s ease;">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">Years to College</div><div class="stat-num clr-b">${years}</div><div class="stat-sub">${childName}</div></div>
+      <div class="stat-box"><div class="stat-label">Projected 529 Value</div><div class="stat-num clr-g">${fmt(totalSaved)}</div><div class="stat-sub">At college start</div></div>
+      <div class="stat-box"><div class="stat-label">Est. Total Cost</div><div class="stat-num clr-r">${fmt(totalNeededSimple)}</div><div class="stat-sub">4 yrs w/ inflation</div></div>
+      <div class="stat-box"><div class="stat-label">Coverage</div><div class="stat-num ${coverageColor}">${pct(gapCovered)}</div><div class="stat-sub">${gap>0?fmt(gap)+' gap':'Fully funded!'}</div></div>
+    </div>
+    ${gap>0?`<div class="alert alert-warn">⚠ Shortfall of <strong>${fmt(gap)}</strong>. Consider increasing monthly contribution to <strong>${fmt(monthly+gap/years/12)}/month</strong> or adding a larger lump sum.</div>`:`<div class="alert alert-green">✓ On track to fully fund ${childName}'s education with current contributions.</div>`}
+    <div class="card"><div class="card-title">529 Growth Chart — ${childName}</div>
+      <svg viewBox="0 0 ${W} ${H}" class="chart-svg" style="height:${H}px;">
+        ${[0.25,0.5,0.75].map(f=>`<line x1="20" y1="${H-10-(f*(H-20))}" x2="${W-20}" y2="${H-10-(f*(H-20))}" stroke="#e0dbd2" stroke-width="1"/>`).join('')}
+        <path d="${needLine}" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <path d="${linePath} L${px(years)},${H-10} L${px(0)},${H-10} Z" fill="rgba(29,78,42,0.08)"/>
+        <path d="${linePath}" fill="none" stroke="#1d4e2a" stroke-width="2.5"/>
+        <circle cx="${px(years)}" cy="${py(totalSaved)}" r="4" fill="#1d4e2a"/>
+      </svg>
+      <div class="proj-x-row"><span>Now</span><span>College (${years} yrs)</span></div>
+      <div style="display:flex;gap:14px;margin-top:6px;font-size:0.68rem;">
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2px;background:#1d4e2a;"></div><span style="color:var(--muted)">529 balance</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:14px;height:2px;background:#b91c1c;border-top:1px dashed #b91c1c;"></div><span style="color:var(--muted)">Target needed</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Contribution Breakdown</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div class="stat-box"><div class="stat-label">Lump Sum Growth</div><div class="stat-num clr-b" style="font-size:1.1rem;">${fmt((balance+lump)*Math.pow(1+annRet,years))}</div><div class="stat-sub">${fmt(lump)} lump sum at 7.2%/yr</div></div>
+        <div class="stat-box"><div class="stat-label">Monthly Contribution</div><div class="stat-num clr-g" style="font-size:1.1rem;">${fmt(valMonthlyOnly)}</div><div class="stat-sub">${fmt(monthly)}/mo × ${years*12} months</div></div>
+        <div class="stat-box"><div class="stat-label">Tax-Free Gains</div><div class="stat-num clr-gold" style="font-size:1.1rem;">${fmt(totalSaved-(balance+lump+monthly*years*12))}</div><div class="stat-sub">Growth never taxed</div></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Superfunding Option (One-Time)</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;">You and your husband can contribute 5 years of gift tax exclusions upfront — $90K per parent = <strong>$180K total per child</strong>, with no gift tax, then no contributions required for 5 years.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="stat-box"><div class="stat-label">Superfund $180K → Value at College</div><div class="stat-num clr-g" style="font-size:1.1rem;">${fmt(180000*Math.pow(1+annRet,years))}</div><div class="stat-sub">For ${childName} in ${years} years</div></div>
+        <div class="stat-box"><div class="stat-label">Both Kids Combined (Superfund)</div><div class="stat-num clr-b" style="font-size:1.1rem;">${fmt(180000*Math.pow(1+annRet,years)+180000*Math.pow(1+annRet,years+6))}</div><div class="stat-sub">$360K total → projected at college</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════
+// 401K RETIREMENT
+// ══════════════════════════
+function runRetirement(){
+  const balance=parseFloat(document.getElementById('k401Balance').value)||420000;
+  const currentAge=parseInt(document.getElementById('currentAge').value)||38;
+  const retireAge=parseInt(document.getElementById('retireAge').value)||65;
+  const annual=parseFloat(document.getElementById('k401Annual').value)||46000;
+  const ret=parseFloat(document.getElementById('k401Return').value)/100;
+  const years=retireAge-currentAge;
+
+  let val=balance;
+  const yearData=[];
+  for(let y=1;y<=years;y++){val=val*(1+ret)+annual;yearData.push({y,v:val});}
+  const finalVal=yearData[yearData.length-1].v;
+  const finalValNoContrib=balance*Math.pow(1+ret,years);
+  const totalContrib=annual*years;
+  const gains=finalVal-balance-totalContrib;
+
+  // Monthly withdrawal (4% rule)
+  const monthly4pct=finalVal*0.04/12;
+  const monthly3pct=finalVal*0.03/12;
+
+  const W=520,H=170;
+  const maxV=finalVal;
+  const px=y=>(y/years)*(W-40)+20;
+  const py=v=>H-((v/maxV)*(H-20))-10;
+  const linePath=yearData.map((d,i)=>`${i===0?'M':'L'}${px(d.y)},${py(d.v)}`).join(' ');
+  // Milestone points
+  const catchupAge=50;
+  const catchupYear=catchupAge-currentAge;
+
+  document.getElementById('retirementResults').innerHTML=`<div style="display:flex;flex-direction:column;gap:16px;animation:fadeIn 0.3s ease;">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">Years to Retirement</div><div class="stat-num clr-b">${years}</div><div class="stat-sub">Retire at age ${retireAge}</div></div>
+      <div class="stat-box"><div class="stat-label">Projected 401K Value</div><div class="stat-num clr-g">${fmt(finalVal)}</div><div class="stat-sub">At age ${retireAge}</div></div>
+      <div class="stat-box"><div class="stat-label">Monthly Income (4%)</div><div class="stat-num clr-gold">${fmt(monthly4pct)}</div><div class="stat-sub">Safe withdrawal rate</div></div>
+      <div class="stat-box"><div class="stat-label">Tax-Deferred Gains</div><div class="stat-num clr-p">${fmt(gains)}</div><div class="stat-sub">Never taxed until withdrawal</div></div>
+    </div>
+    <div class="card"><div class="card-title">401K Growth Projection</div>
+      <svg viewBox="0 0 ${W} ${H}" class="chart-svg" style="height:${H}px;">
+        ${[0.25,0.5,0.75].map(f=>`<line x1="20" y1="${H-10-(f*(H-20))}" x2="${W-20}" y2="${H-10-(f*(H-20))}" stroke="#e0dbd2" stroke-width="1"/>`).join('')}
+        ${catchupYear>0&&catchupYear<years?`<line x1="${px(catchupYear)}" y1="10" x2="${px(catchupYear)}" y2="${H-10}" stroke="#92660a" stroke-width="1" stroke-dasharray="3,3"/><text x="${px(catchupYear)+4}" y="22" font-family="IBM Plex Mono" font-size="9" fill="#92660a">Age 50 catch-up</text>`:''}
+        <path d="${linePath} L${px(years)},${H-10} L${px(0)},${H-10} Z" fill="rgba(29,78,42,0.07)"/>
+        <path d="${linePath}" fill="none" stroke="#1d4e2a" stroke-width="2.5"/>
+        <circle cx="${px(years)}" cy="${py(finalVal)}" r="4" fill="#1d4e2a"/>
+      </svg>
+      <div class="proj-x-row"><span>Age ${currentAge}</span><span>Age ${retireAge}</span></div>
+    </div>
+    <div class="card"><div class="card-title">Retirement Income Scenarios</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div class="stat-box"><div class="stat-label">Conservative (3%)</div><div class="stat-num clr-b" style="font-size:1.1rem;">${fmt(monthly3pct)}/mo</div><div class="stat-sub">${fmt(monthly3pct*12)}/yr · Very safe</div></div>
+        <div class="stat-box" style="border-color:var(--accent);"><div class="stat-label">Recommended (4%)</div><div class="stat-num clr-g" style="font-size:1.1rem;">${fmt(monthly4pct)}/mo</div><div class="stat-sub">${fmt(monthly4pct*12)}/yr · 30-yr safe</div></div>
+        <div class="stat-box"><div class="stat-label">Aggressive (5%)</div><div class="stat-num clr-r" style="font-size:1.1rem;">${fmt(finalVal*0.05/12)}/mo</div><div class="stat-sub">${fmt(finalVal*0.05*12)}/yr · Higher risk</div></div>
+      </div>
+      <div class="alert alert-blue">ℹ Remember: 401K withdrawals are taxed as ordinary income. At retirement, plan for 10–22% federal tax depending on your total income. Consider Roth conversion in low-income years.</div>
+    </div>
+    <div class="card"><div class="card-title">Contribution Breakdown</div>
+      <div class="bar-chart">
+        <div class="bar-row"><div class="bar-name">Current Balance</div><div class="bar-track"><div class="bar-fill" style="width:${(balance/finalVal*100).toFixed(0)}%;background:#1e3a6e;"></div></div><div class="bar-val">${fmt(balance)}</div></div>
+        <div class="bar-row"><div class="bar-name">Contributions</div><div class="bar-track"><div class="bar-fill" style="width:${(totalContrib/finalVal*100).toFixed(0)}%;background:#2d5a27;"></div></div><div class="bar-val">${fmt(totalContrib)}</div></div>
+        <div class="bar-row"><div class="bar-name">Investment Gains</div><div class="bar-track"><div class="bar-fill" style="width:${(gains/finalVal*100).toFixed(0)}%;background:#92660a;"></div></div><div class="bar-val">${fmt(gains)}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════
+// REBALANCE
+// ══════════════════════════
+const TARGET={SCHD:18,VIG:12,BND:15,TIPS:10,JNJ:10,PG:8,KO:7,'BRK.B':10,VNQ:10};
+const CURRENT={SCHD:22,VIG:10,BND:12,TIPS:11,JNJ:8,PG:9,KO:6,'BRK.B':13,VNQ:9};
+
+function runRebalance(){
+  const amount=parseFloat(document.getElementById('rebalAmount').value)||450000;
+  const drift=parseInt(document.getElementById('driftSlider').value);
+  const horizon=parseInt(document.getElementById('horizonSlider').value);
+  const rows=Object.entries(TARGET).map(([ticker,tp])=>{
+    const cp=CURRENT[ticker]||0,diff=cp-tp,abs=Math.abs(diff);
+    const action=abs<drift?'HOLD':diff>0?'SELL':'BUY';
+    const dollar=(abs/100)*amount;
+    const cls=abs<drift?'drift-ok':diff>0?'drift-up':'drift-dn';
+    const acls=action==='BUY'?'a-buy':action==='SELL'?'a-sell':'a-hold';
+    const asset=Object.values(ASSETS).flat().find(a=>a.ticker===ticker);
+    return`<div class="rebal-row"><div><span class="ticker-badge" style="background:${asset?.color||'#aaa'}18;color:${asset?.color||'#aaa'};border:1px solid ${asset?.color||'#aaa'}30;">${ticker}</span><span style="margin-left:7px;font-size:0.76rem;color:var(--muted);">${asset?.name||''}</span></div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;">${pct(tp)}</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;">${pct(cp)}</div>
+      <div class="${cls}">${diff>0?'+':''}${pct(diff)}${abs>=drift?' ('+fmt(dollar)+')':''}</div>
+      <div><span class="rebal-action ${acls}">${action}</span></div></div>`;
+  }).join('');
+  document.getElementById('rebalResults').innerHTML=`<div><div class="rebal-header"><div>Asset</div><div>Target</div><div>Current</div><div>Drift</div><div>Action</div></div>${rows}
+    <div class="alert alert-blue" style="margin-top:12px;">Drift threshold: ±${drift}% · Portfolio: ${fmt(amount)} · Rebalance annually or when triggered.</div></div>`;
+  renderProjection(amount,horizon);
+}
+
+function renderProjection(amount,years){
+  const r=0.089,rb=0.12,rbe=0.04;
+  const pts=[],bull=[],bear=[];
+  for(let y=0;y<=years;y++){pts.push({y,v:amount*Math.pow(1+r,y)});bull.push({y,v:amount*Math.pow(1+rb,y)});bear.push({y,v:amount*Math.pow(1+rbe,y)});}
+  const all=[...pts,...bull,...bear].map(p=>p.v);
+  const mn=Math.min(...all),mx=Math.max(...all);
+  const W=500,H=150;
+  const px=y=>(y/years)*(W-40)+20;
+  const py=v=>H-((v-mn)/(mx-mn))*(H-20)-10;
+  const po=arr=>arr.map((p,i)=>`${i===0?'M':'L'}${px(p.y)},${py(p.v)}`).join(' ');
+  const fB=bull[bull.length-1].v,fBase=pts[pts.length-1].v,fBear=bear[bear.length-1].v;
+  document.getElementById('projectionChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" style="height:${H}px;">
+      ${[0.25,0.5,0.75].map(f=>`<line x1="20" y1="${H-10-(f*(H-20))}" x2="${W-20}" y2="${H-10-(f*(H-20))}" stroke="#e0dbd2" stroke-width="1"/>`).join('')}
+      <path d="${po(bear)}" fill="none" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+      <path d="${po(bull)}" fill="none" stroke="#3d7a52" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+      <path d="${po(pts)}" fill="none" stroke="#1d4e2a" stroke-width="2.5"/>
+      <circle cx="${px(years)}" cy="${py(fBase)}" r="4" fill="#1d4e2a"/>
+    </svg>
+    <div class="proj-x-row"><span>Now</span><span>${years} yrs</span></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;">
+      <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--muted);">🐂 Bull</div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--green);font-weight:700;">${fmt(fB)}</div></div>
+      <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--muted);">Base</div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--accent);font-weight:700;">${fmt(fBase)}</div></div>
+      <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--muted);">🐻 Bear</div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--red);font-weight:700;">${fmt(fBear)}</div></div>
+    </div>`;
+}
+
+// ══════════════════════════
+// CNY / FX RATE
+// ══════════════════════════
+let fxRate = 7.25;
+
+function onFxChange() {
+  const v = parseFloat(document.getElementById('fxRate').value);
+  if(!isNaN(v) && v > 0) {
+    fxRate = v;
+    document.getElementById('fxRateDisplay').textContent = fxRate.toFixed(2);
+    document.getElementById('fxLastUpdated').textContent = 'manual';
+  }
+  // Re-convert CNY → USD if CNY field has a value
+  const cnyEl = document.getElementById('cnyChinaInput');
+  if(cnyEl && cnyEl.value) syncChinaAssets();
+}
+
+function syncChinaAssets() {
+  const cny = parseFloat(document.getElementById('cnyChinaInput').value) || 0;
+  const usd = Math.round(cny / fxRate);
+  document.getElementById('usdChinaInput').value = usd || '';
+  NW.chinaTotal = usd;
+  document.getElementById('disp-chinaTotal').textContent = '$' + fmtNW(usd);
+  refreshNetWorth();
+}
+
+function syncChinaAssetsFromUSD() {
+  const usd = parseFloat(document.getElementById('usdChinaInput').value) || 0;
+  const cny = Math.round(usd * fxRate);
+  document.getElementById('cnyChinaInput').value = cny || '';
+  NW.chinaTotal = usd;
+  document.getElementById('disp-chinaTotal').textContent = '$' + fmtNW(usd);
+  refreshNetWorth();
+}
+
+function convertCNY() {} // legacy stub — no longer used
+
+async function fetchLiveFX() {
+  const statusEl = document.getElementById('fxStatus');
+  const btn = document.querySelector('button[onclick="fetchLiveFX()"]');
+  statusEl.textContent = 'Fetching…';
+  btn.disabled = true;
+  try {
+    // Use exchangerate-api (free, no key needed for basic pairs)
+    const res = await fetch('https://open.er-api.com/v6/latest/USD');
+    if(!res.ok) throw new Error('Network error');
+    const data = await res.json();
+    const rate = data.rates && data.rates.CNY;
+    if(rate) {
+      fxRate = parseFloat(rate.toFixed(4));
+      document.getElementById('fxRate').value = fxRate;
+      document.getElementById('fxRateDisplay').textContent = fxRate.toFixed(4);
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      document.getElementById('fxLastUpdated').textContent = 'live · ' + timeStr;
+      document.getElementById('fxLastUpdated').style.color = '#16a34a';
+      statusEl.textContent = '✓ Updated';
+      statusEl.style.color = '#16a34a';
+      convertCNY();
+      // re-sync China assets with new rate
+      const cnyEl = document.getElementById('cnyChinaInput');
+      if(cnyEl && cnyEl.value) syncChinaAssets();
+    } else {
+      throw new Error('No rate data');
+    }
+  } catch(e) {
+    statusEl.textContent = '✗ Failed — check connection';
+    statusEl.style.color = '#b91c1c';
+  }
+  btn.disabled = false;
+}
+
+// ══════════════════════════
+// EDITABLE NET WORTH VALUES
+// ══════════════════════════
+const NW = {
+  homeValue:       760000,
+  homePurchase:    700000,
+  k401:            420000,
+  cash:            200000,
+  cds:             250000,
+  mortgageRemaining:130000,
+  mortgageRate:    3.375,
+  mortgageMonthly: 1320,
+  cdRate:          4.5,
+  cdRateHigh:      5.0,
+  otherDebt:       0,
+  // China (single combined value in USD)
+  chinaTotal:      0,
+  // US Small Business
+  bizEquity:       45000,
+  bizRevenue:      80000,
+  bizExpenses:     22000,
+};
+
+let editKey = null;
+
+function fmtNW(n, isRate=false) {
+  if(isRate) return n;
+  return new Intl.NumberFormat('en-US').format(n);
+}
+
+function isRateKey(k){ return ['mortgageRate','cdRate','cdRateHigh'].includes(k); }
+
+function refreshNetWorth() {
+  const usAssets = NW.homeValue + NW.k401 + NW.cash + NW.cds + NW.bizEquity;
+  const cnAssets = NW.chinaTotal;
+  const totalAssets = usAssets + cnAssets;
+  const totalLiabilities = NW.mortgageRemaining + NW.otherDebt;
+  const netWorth = totalAssets - totalLiabilities;
+  const liquid = NW.cash + NW.cds;
+
+  // Update display spans
+  const dispKeys = ['homeValue','k401','cash','cds','mortgageRemaining','otherDebt','chinaTotal','bizEquity','bizRevenue','bizExpenses'];
+  dispKeys.forEach(k => {
+    const el = document.getElementById('disp-'+k);
+    if(el) el.textContent = fmtNW(NW[k]);
+  });
+
+  // Update display text for rate-type fields that use span.editable-val directly
+  document.querySelectorAll('.editable-val[data-key]').forEach(el => {
+    const k = el.dataset.key;
+    if(isRateKey(k)) {
+      el.childNodes.forEach(n => { if(n.nodeType===3) n.textContent = fmtNW(NW[k]); });
+    }
+  });
+
+  // Totals
+  document.getElementById('totalAssetsDisplay').textContent = '$' + fmtNW(totalAssets) + (cnAssets > 0 ? '' : '+');
+  document.getElementById('totalLiabilitiesDisplay').textContent = '-$' + fmtNW(totalLiabilities);
+  document.getElementById('bannerNetWorth').textContent = '$' + fmtNW(netWorth);
+  document.getElementById('bannerLiquid').textContent = '$' + fmtNW(liquid);
+  document.getElementById('bannerLiquidSub').textContent = '$' + Math.round(NW.cash/1000) + 'K cash + $' + Math.round(NW.cds/1000) + 'K CD';
+
+  // Update header stats
+  const hNW = document.getElementById('hNetWorth');
+  if(hNW) hNW.textContent = '$' + fmtNW(netWorth);
+  const hLiq = document.getElementById('hLiquid');
+  if(hLiq) hLiq.textContent = '$' + fmtNW(liquid);
+  const hTA = document.getElementById('hTotalAssets');
+  if(hTA) hTA.textContent = '$' + fmtNW(totalAssets);
+  const hBiz = document.getElementById('hBizProfit');
+  if(hBiz) {
+    const profit = NW.bizRevenue - NW.bizExpenses;
+    if(NW.bizRevenue === 0 && NW.bizExpenses === 0) {
+      hBiz.textContent = '—';
+      hBiz.style.color = 'rgba(255,255,255,0.4)';
+    } else {
+      hBiz.textContent = (profit >= 0 ? '+$' : '-$') + fmtNW(Math.abs(profit));
+      hBiz.style.color = profit >= 0 ? '#86efac' : '#fca5a5';
+    }
+  }
+
+  // Proportional bars
+  const maxAsset = Math.max(NW.homeValue, NW.k401, NW.cash, NW.cds, NW.chinaTotal, NW.bizEquity, 1);
+  const barMap = {
+    homeValue:         {id:'bar-homeValue',         max:maxAsset},
+    k401:              {id:'bar-k401',               max:maxAsset},
+    cash:              {id:'bar-cash',               max:maxAsset},
+    cds:               {id:'bar-cds',                max:maxAsset},
+    chinaTotal:        {id:'bar-chinaTotal',          max:maxAsset},
+    bizEquity:         {id:'bar-bizEquity',           max:maxAsset},
+    mortgageRemaining: {id:'bar-mortgageRemaining',  max:NW.homeValue||1},
+  };
+  Object.entries(barMap).forEach(([k,cfg])=>{
+    const el = document.getElementById(cfg.id);
+    if(el) el.style.width = Math.min((NW[k]/cfg.max)*100, 100).toFixed(1)+'%';
+  });
+
+  // Allocation bar — segments
+  const safe = (v) => totalAssets > 0 ? (v/totalAssets*100) : 0;
+  const rePct   = safe(NW.homeValue).toFixed(1);
+  const k401Pct = safe(NW.k401).toFixed(1);
+  const cashPct = safe(NW.cash).toFixed(1);
+  const cdsPct  = safe(NW.cds).toFixed(1);
+  const cnPct   = safe(cnAssets).toFixed(1);
+  const bizPct  = safe(NW.bizEquity).toFixed(1);
+  const otherPct = Math.max(0, 100 - parseFloat(rePct) - parseFloat(k401Pct) - parseFloat(cashPct) - parseFloat(cdsPct) - parseFloat(cnPct) - parseFloat(bizPct)).toFixed(1);
+
+  const allocBar = document.getElementById('allocBar');
+  if(allocBar) {
+    allocBar.innerHTML = [
+      `<div class="alloc-seg" style="width:${rePct}%;background:#2d6e3a;"></div>`,
+      `<div class="alloc-seg" style="width:${k401Pct}%;background:#1e3a6e;"></div>`,
+      `<div class="alloc-seg" style="width:${cashPct}%;background:#4a7c59;"></div>`,
+      `<div class="alloc-seg" style="width:${cdsPct}%;background:#92660a;"></div>`,
+      `<div class="alloc-seg" style="width:${cnPct}%;background:#7c3aed;"></div>`,
+      `<div class="alloc-seg" style="width:${bizPct}%;background:#c2410c;"></div>`,
+      `<div class="alloc-seg" style="width:${otherPct}%;background:#5b21b6;"></div>`,
+    ].join('');
+  }
+
+  // Legend
+  const allocLegend = document.getElementById('allocLegend');
+  if(allocLegend) {
+    const items = [
+      {color:'#2d6e3a', label:'US Real Estate', pct:rePct},
+      {color:'#1e3a6e', label:'401K',            pct:k401Pct},
+      {color:'#4a7c59', label:'Cash',            pct:cashPct},
+      {color:'#92660a', label:'CDs',             pct:cdsPct},
+    ];
+    if(cnAssets > 0)      items.push({color:'#7c3aed', label:'China Assets',  pct:cnPct});
+    if(NW.bizEquity > 0)  items.push({color:'#c2410c', label:'US Business',   pct:bizPct});
+    if(parseFloat(otherPct) > 0.5) items.push({color:'#5b21b6', label:'Other', pct:otherPct});
+    allocLegend.innerHTML = items.map(i =>
+      `<div class="legend-dot"><div style="width:8px;height:8px;border-radius:2px;background:${i.color};"></div><span>${i.label} ${parseFloat(i.pct).toFixed(0)}%</span></div>`
+    ).join('');
+  }
+
+  // ── Business tax snapshot ──
+  const profit = NW.bizRevenue - NW.bizExpenses;
+  const profitEl = document.getElementById('bizProfitDisplay');
+  if(profitEl) {
+    profitEl.textContent = (profit >= 0 ? '$' : '-$') + fmtNW(Math.abs(profit));
+    profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+  }
+  if(profit > 0) {
+    const seTax   = profit * 0.9235 * 0.153;          // SE tax (employer+employee)
+    const seDeduct = seTax / 2;                         // deductible half of SE tax
+    const qbi     = Math.max(0, (profit - seDeduct) * 0.20); // 20% QBI deduction
+    const taxable = profit - seDeduct - qbi;
+    const incTax  = taxable * 0.22;                    // rough 22% bracket
+    const solo    = Math.min(profit * 0.25 + 23000, 69000); // solo 401K room
+
+    setText('bizSETax',    '$' + fmtNW(Math.round(seTax)));
+    setText('bizIncomeTax','$' + fmtNW(Math.round(incTax)));
+    setText('bizQBI',      '$' + fmtNW(Math.round(qbi)));
+    setText('bizSolo401k', '$' + fmtNW(Math.round(solo)));
+
+    const totalTax = seTax + incTax;
+    const effectiveRate = (totalTax / profit * 100).toFixed(1);
+    const savings = qbi * 0.22 + Math.min(solo, profit) * 0.22; // rough tax savings
+
+    const bi = document.getElementById('bizInsights');
+    if(bi) bi.innerHTML = [
+      `<div class="alert alert-warn">⚡ Estimated total tax burden: <strong>$${fmtNW(Math.round(totalTax))}</strong> (~${effectiveRate}% effective rate on $${fmtNW(profit)} profit).</div>`,
+      `<div class="alert alert-green">✓ <strong>QBI deduction</strong> saves ~$${fmtNW(Math.round(qbi * 0.22))} in federal tax. Ensure business qualifies (most small businesses do).</div>`,
+      solo > 0 ? `<div class="alert alert-green">✓ <strong>Solo 401K</strong> — contribute up to $${fmtNW(Math.round(solo))}/yr to shelter income from tax. Both employee + employer contributions allowed.</div>` : '',
+      `<div class="alert alert-blue">ℹ <strong>Quarterly estimated taxes</strong> are required once business is profitable — pay by Apr 15, Jun 15, Sep 15, Jan 15.</div>`,
+      `<div class="alert alert-blue">ℹ Consider <strong>S-Corp election</strong> once profit exceeds ~$40K/yr — can reduce self-employment tax significantly.</div>`,
+    ].join('');
+  } else {
+    setText('bizSETax',    '$0'); setText('bizIncomeTax','$0');
+    setText('bizQBI',      '$0'); setText('bizSolo401k', '$0');
+    const bi = document.getElementById('bizInsights');
+    if(bi) {
+      if(profit < 0) {
+        bi.innerHTML = `<div class="alert alert-blue">ℹ <strong>Business loss of $${fmtNW(Math.abs(profit))}</strong> can offset other household income — consult a CPA to apply this deduction correctly.</div>
+        <div class="alert alert-blue">ℹ Keep all receipts and track expenses carefully — startup costs are often deductible.</div>`;
+      } else {
+        bi.innerHTML = `<div class="alert alert-blue">ℹ Enter revenue &amp; expenses above to see your tax snapshot and savings opportunities.</div>`;
+      }
+    }
+  }
+
+  // Main insights panel
+  const ip = document.getElementById('insightsPanel');
+  if(ip) {
+    const rate = NW.mortgageRate;
+    const rateGood = rate < 5;
+    const hasCDs = NW.cds > 0;
+    const hasOtherDebt = NW.otherDebt > 0;
+    const hasCnAssets = cnAssets > 0;
+    const hasBiz = NW.bizRevenue > 0 || NW.bizEquity > 0;
+    ip.innerHTML = [
+      rateGood
+        ? `<div class="alert alert-green">✓ <strong>Mortgage at ${rate}%</strong> is well below market rate (7%+). Do NOT pay it off early — invest instead.</div>`
+        : `<div class="alert alert-warn">⚡ <strong>Mortgage at ${rate}%</strong> is above 5%. Consider paying down vs investing.</div>`,
+      hasCDs
+        ? `<div class="alert alert-warn">⚡ <strong>$${fmtNW(NW.cds)} CDs maturing</strong> in &lt;6 months — you'll have $${fmtNW(liquid)} to deploy. Start planning now.</div>`
+        : '',
+      `<div class="alert alert-blue">ℹ <strong>401K is locked</strong> until 59½. Focus investment decisions on the $${fmtNW(liquid)} liquid pool.</div>`,
+      hasOtherDebt
+        ? `<div class="alert alert-warn">⚡ <strong>$${fmtNW(NW.otherDebt)} in other debt</strong> — prioritize paying this off before investing.</div>`
+        : `<div class="alert alert-green">✓ <strong>Zero debt</strong> outside mortgage is excellent. Full investable capacity.</div>`,
+      hasCnAssets
+        ? `<div class="alert alert-blue">ℹ <strong>China assets ($${fmtNW(cnAssets)})</strong> included in net worth. Review RMB/USD rate regularly.</div>`
+        : '',
+      hasBiz
+        ? `<div class="alert alert-blue">ℹ <strong>US business</strong> included in net worth. See the business card below for tax planning details.</div>`
+        : '',
+      `<div class="alert alert-warn">⚡ <strong>China business income</strong> — consult a cross-border CPA about US tax reporting obligations.</div>`,
+    ].join('');
+  }
+}
+
+function setText(id, val) { const e = document.getElementById(id); if(e) e.textContent = val; }
+
+function openEdit(event, key, label) {
+  event.stopPropagation();
+  event.preventDefault();
+  editKey = key;
+  const popup = document.getElementById('editPopup');
+  const input = document.getElementById('editPopupInput');
+  const lbl = document.getElementById('editPopupLabel');
+  lbl.textContent = label;
+  input.value = NW[key] || 0;
+  input.step = isRateKey(key) ? '0.001' : '1000';
+  input.min = 0;
+
+  // CNY helper — no longer needed (China uses inline inputs)
+  let cnyHelper = document.getElementById('editCnyHelper');
+  if(!cnyHelper) {
+    cnyHelper = document.createElement('div');
+    cnyHelper.id = 'editCnyHelper';
+    popup.insertBefore(cnyHelper, popup.querySelector('.ep-btns'));
+  }
+  cnyHelper.style.display = 'none';
+
+  // Position popup — anchor to clicked element or closest editable-val
+  const anchor = event.currentTarget || event.target;
+  const rect = anchor.getBoundingClientRect();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  const popupW = 240;
+  let left = rect.left;
+  if(left + popupW > window.innerWidth - 10) left = window.innerWidth - popupW - 10;
+  popup.style.left = Math.max(6, left) + 'px';
+  popup.style.top  = (rect.bottom + scrollY + 8) + 'px';
+  popup.classList.add('open');
+  setTimeout(() => { input.focus(); input.select(); }, 60);
+}
+
+
+function closeEdit() {
+  document.getElementById('editPopup').classList.remove('open');
+  editKey = null;
+}
+
+function saveEdit() {
+  if(!editKey) return;
+  const val = parseFloat(document.getElementById('editPopupInput').value);
+  if(!isNaN(val) && val >= 0) {
+    NW[editKey] = val;
+    refreshNetWorth();
+  }
+  closeEdit();
+}
+
+// Close popup on outside click — use mousedown to beat the click event
+document.addEventListener('mousedown', (e) => {
+  const popup = document.getElementById('editPopup');
+  if(popup && popup.classList.contains('open') && !popup.contains(e.target) && !e.target.closest('.editable-val')) closeEdit();
+});
+
+// Enter key saves
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && editKey) saveEdit();
+  if(e.key === 'Escape' && editKey) closeEdit();
+});
+
+// Initial render
+refreshNetWorth();
+
+// ══════════════════════════
+// CD RATES DATA (Feb 26, 2026)
+// ══════════════════════════
+const CD_DATA = [
+  // Institution, term label, term key, APY, min deposit, early withdrawal penalty, notes, type
+  {bank:'Northern Bank Direct', term:'3 Month',  key:'3mo', apy:4.15, min:500,  ewp:'90 days interest',  note:'Online only · No checking/savings',  badge:'top'},
+  {bank:'Northern Bank Direct', term:'6 Month',  key:'6mo', apy:4.15, min:500,  ewp:'90 days interest',  note:'Consistently market-leading',         badge:'top'},
+  {bank:'Bread Savings',        term:'6 Month',  key:'6mo', apy:4.20, min:1500, ewp:'90 days interest',  note:'Highest 6-mo rate in market',         badge:'best'},
+  {bank:'Bread Savings',        term:'3 Month',  key:'3mo', apy:4.00, min:1500, ewp:'90 days interest',  note:'Strong short-term option',            badge:''},
+  {bank:'Bread Savings',        term:'1 Year',   key:'1yr', apy:3.90, min:1500, ewp:'180 days interest', note:'Competitive across all terms',        badge:''},
+  {bank:'Mountain America CU',  term:'6 Month',  key:'6mo', apy:4.20, min:500,  ewp:'180 days interest', note:'Credit union · Member required',       badge:'best'},
+  {bank:'First Nat. Bank of America', term:'3 Month', key:'3mo', apy:4.05, min:1000, ewp:'90 days interest', note:'Solid short-term rate',           badge:''},
+  {bank:'First Nat. Bank of America', term:'6 Month', key:'6mo', apy:4.05, min:1000, ewp:'90 days interest', note:'Solid mid-term rate',             badge:''},
+  {bank:'First Nat. Bank of America', term:'1 Year',  key:'1yr', apy:3.80, min:1000, ewp:'180 days interest', note:'Good 1-year option',             badge:''},
+  {bank:'Marcus (Goldman Sachs)',term:'1 Year',   key:'1yr', apy:4.00, min:500,  ewp:'90 days interest',  note:'No-penalty CD also available',        badge:''},
+  {bank:'Marcus (Goldman Sachs)',term:'2 Year',   key:'2yr', apy:3.90, min:500,  ewp:'180 days interest', note:'Bump-up CD: request 1 rate increase', badge:''},
+  {bank:'Marcus (Goldman Sachs)',term:'5 Year',   key:'5yr', apy:3.90, min:500,  ewp:'270 days interest', note:'Strong long-term, low minimum',       badge:''},
+  {bank:'American Express Bank', term:'1 Year',   key:'1yr', apy:4.00, min:0,    ewp:'150 days interest', note:'No minimum deposit required',         badge:''},
+  {bank:'American Express Bank', term:'2 Year',   key:'2yr', apy:3.85, min:0,    ewp:'270 days interest', note:'No minimum deposit required',         badge:''},
+  {bank:'Limelight Bank',        term:'6 Month',  key:'6mo', apy:4.00, min:1000, ewp:'90 days interest',  note:'Competitive online bank',             badge:''},
+  {bank:'Limelight Bank',        term:'1 Year',   key:'1yr', apy:4.00, min:1000, ewp:'180 days interest', note:'Competitive 1-year rate',             badge:''},
+  {bank:'Ally Bank',             term:'1 Year',   key:'1yr', apy:3.80, min:0,    ewp:'150 days interest', note:'No minimum · 10-day best rate guar.', badge:''},
+  {bank:'Ally Bank',             term:'6 Month',  key:'6mo', apy:3.85, min:0,    ewp:'60 days interest',  note:'No minimum deposit · FDIC insured',   badge:''},
+  {bank:'Ally Bank',             term:'11 Mo (No Penalty)', key:'6mo', apy:2.90, min:0, ewp:'None',       note:'Withdraw anytime after 6 days',       badge:'flex'},
+  {bank:'Discover Bank',         term:'1 Year',   key:'1yr', apy:3.80, min:2500, ewp:'6 months interest', note:'Reputable online bank',               badge:''},
+  {bank:'Capital One',           term:'6 Month',  key:'6mo', apy:3.90, min:0,    ewp:'90 days interest',  note:'No minimum deposit',                  badge:''},
+  {bank:'Capital One',           term:'1 Year',   key:'1yr', apy:3.80, min:0,    ewp:'180 days interest', note:'No minimum · Easy to open',           badge:''},
+  {bank:'Citibank',              term:'3 Month',  key:'3mo', apy:4.18, min:500,  ewp:'90 days interest',  note:'Location-based — verify locally',     badge:'top'},
+  {bank:'Popular Direct',        term:'1 Year',   key:'1yr', apy:3.90, min:10000,ewp:'180 days interest', note:'High minimum but strong rate',        badge:''},
+  {bank:'E*TRADE (Morgan Stanley)',term:'6 Month',key:'6mo', apy:3.80, min:0,    ewp:'90 days interest',  note:'No minimum · Investment platform',    badge:''},
+  {bank:'E*TRADE (Morgan Stanley)',term:'1 Year', key:'1yr', apy:3.80, min:0,    ewp:'180 days interest', note:'No minimum deposit',                  badge:''},
+];
+
+const NAT_AVG = {
+  '3mo': 1.50, '6mo': 1.70, '1yr': 1.88, '2yr': 1.82, '5yr': 1.60
+};
+
+let activeCDFilter = 'all';
+
+function filterCDs(term, btn) {
+  activeCDFilter = term;
+  document.querySelectorAll('#termFilters .chip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  renderCDTable();
+}
+
+function renderCDTable() {
+  const data = activeCDFilter === 'all'
+    ? CD_DATA
+    : CD_DATA.filter(d => d.key === activeCDFilter);
+
+  const sorted = [...data].sort((a,b) => b.apy - a.apy);
+  const maxAPY = sorted[0]?.apy || 4.2;
+
+  const badgeHTML = (b) => {
+    if(b === 'best') return '<span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#dcfce7;color:#166534;font-size:0.6rem;font-weight:700;margin-left:5px;">BEST</span>';
+    if(b === 'top')  return '<span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#dbeafe;color:#1e3a6e;font-size:0.6rem;font-weight:700;margin-left:5px;">TOP</span>';
+    if(b === 'flex') return '<span style="display:inline-block;padding:2px 6px;border-radius:4px;background:#fef9c3;color:#854d0e;font-size:0.6rem;font-weight:700;margin-left:5px;">FLEX</span>';
+    return '';
+  };
+
+  const minFmt = m => m === 0 ? '<span style="color:var(--green)">$0</span>' : '$' + m.toLocaleString();
+  const onAmt = 250000;
+
+  document.getElementById('cdTableBody').innerHTML = sorted.map((d,i) => {
+    const interest = onAmt * d.apy/100 * (d.key==='3mo'?0.25:d.key==='6mo'?0.5:d.key==='1yr'?1:d.key==='2yr'?2:5);
+    const barW = (d.apy / maxAPY * 100).toFixed(0);
+    const isTop = d.apy >= 4.15;
+    return `<tr style="animation:fadeIn 0.2s ${i*0.03}s ease both;${isTop?'background:rgba(29,78,42,0.03);':''}">
+      <td><div style="font-weight:600;font-size:0.8rem;">${d.bank}${badgeHTML(d.badge)}</div></td>
+      <td><span style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;background:var(--surface2);padding:2px 7px;border-radius:4px;">${d.term}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:0.92rem;color:${isTop?'var(--green)':'var(--blue)'};">${d.apy.toFixed(2)}%</span>
+          <div class="wbar-track" style="width:50px;"><div class="wbar-fill" style="width:${barW}%;background:${isTop?'#2d6e3a':'#1e3a6e'};"></div></div>
+        </div>
+      </td>
+      <td style="font-size:0.78rem;">${minFmt(d.min)}</td>
+      <td style="font-size:0.72rem;color:var(--muted);">${d.ewp}</td>
+      <td style="font-size:0.7rem;color:var(--muted);max-width:160px;">${d.note}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--green);font-weight:600;">+$${Math.round(interest).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  renderAvgComparison();
+}
+
+function renderAvgComparison() {
+  const terms = [{key:'3mo',label:'3 Month'},{key:'6mo',label:'6 Month'},{key:'1yr',label:'1 Year'},{key:'2yr',label:'2 Year'},{key:'5yr',label:'5 Year'}];
+  const amt = 250000;
+  document.getElementById('avgComparison').innerHTML = terms.map(t => {
+    const best = Math.max(...CD_DATA.filter(d=>d.key===t.key).map(d=>d.apy));
+    const avg = NAT_AVG[t.key];
+    const yrs = t.key==='3mo'?0.25:t.key==='6mo'?0.5:t.key==='1yr'?1:t.key==='2yr'?2:5;
+    const extra = (best - avg)/100 * amt * yrs;
+    return `<div style="display:grid;grid-template-columns:70px 1fr 80px 90px;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--surface2);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;font-weight:600;color:var(--muted);">${t.label}</span>
+      <div>
+        <div style="display:flex;gap:4px;align-items:center;margin-bottom:3px;">
+          <div style="height:6px;background:#1d4e2a;border-radius:3px;width:${(best/4.5*100).toFixed(0)}%;"></div>
+          <span style="font-size:0.65rem;color:var(--green);font-weight:700;">${best.toFixed(2)}% best</span>
+        </div>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <div style="height:6px;background:#e0dbd2;border-radius:3px;width:${(avg/4.5*100).toFixed(0)}%;"></div>
+          <span style="font-size:0.65rem;color:var(--light);">${avg.toFixed(2)}% avg</span>
+        </div>
+      </div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--green);">+${(best-avg).toFixed(2)}%</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--gold);">+$${Math.round(extra).toLocaleString()}</span>
+    </div>`;
+  }).join('');
+}
+
+function calcCD() {
+  const amt   = parseFloat(document.getElementById('cdCalcAmount').value) || 250000;
+  const apy   = parseFloat(document.getElementById('cdCalcAPY').value) / 100;
+  const years = parseFloat(document.getElementById('cdCalcTerm').value);
+  const interest = amt * apy * years;
+  const total    = amt + interest;
+  const monthly  = interest / (years * 12);
+  const avgInterest = amt * 0.0188 * years;
+  const extra = interest - avgInterest;
+  document.getElementById('cdCalcInterest').textContent = '$' + Math.round(interest).toLocaleString();
+  document.getElementById('cdCalcTotal').textContent    = '$' + Math.round(total).toLocaleString();
+  document.getElementById('cdCalcMonthly').textContent  = '$' + Math.round(monthly).toLocaleString() + '/mo';
+  document.getElementById('cdCalcExtra').textContent    = '+$' + Math.round(extra).toLocaleString();
+}
+
+function renderCDLadder() {
+  const rungs = [
+    {term:'3 Month',  key:'3mo', bank:'Citibank',       apy:4.18, share:0.15},
+    {term:'6 Month',  key:'6mo', bank:'Bread Savings',  apy:4.20, share:0.25},
+    {term:'1 Year',   key:'1yr', bank:'Marcus',         apy:4.00, share:0.25},
+    {term:'2 Year',   key:'2yr', bank:'Marcus',         apy:3.90, share:0.20},
+    {term:'5 Year',   key:'5yr', bank:'Marcus',         apy:3.90, share:0.15},
+  ];
+  const total = 250000;
+  const colors = ['#2d6e3a','#1e3a6e','#92660a','#7c3aed','#c2410c'];
+  document.getElementById('cdLadder').innerHTML = rungs.map((r,i) => {
+    const amt = total * r.share;
+    const interest = amt * r.apy/100 * (r.key==='3mo'?0.25:r.key==='6mo'?0.5:r.key==='1yr'?1:r.key==='2yr'?2:5);
+    return `<div style="display:grid;grid-template-columns:70px 1fr 75px;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:7px;border-left:3px solid ${colors[i]};">
+      <div><div style="font-size:0.72rem;font-weight:700;color:${colors[i]};">${r.term}</div><div style="font-size:0.62rem;color:var(--muted);">${r.bank}</div></div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.68rem;color:var(--muted);">${fmt(amt)} · ${r.apy}% APY</span><span style="font-size:0.68rem;color:var(--green);font-weight:600;">+${fmt(Math.round(interest))}</span></div>
+        <div style="height:4px;background:var(--border);border-radius:2px;"><div style="width:${r.share*100}%;height:100%;background:${colors[i]};border-radius:2px;"></div></div>
+      </div>
+      <div style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;color:${colors[i]};">${(r.share*100).toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════
+// INIT
+// ══════════════════════════
+updateRisk(document.getElementById('riskSlider'));
+</script>
+</body>
+</html>
